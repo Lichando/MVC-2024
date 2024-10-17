@@ -5,7 +5,7 @@
 class DataBase
 {
     private static $host = "localhost";
-    private static $dbname = "greenhouse";
+    private static $dbname = "inmobiliaria_db";
     private static $dbuser = "root";
     private static $dbpass = "";
 
@@ -35,7 +35,7 @@ class DataBase
     }
 
     // Ejecutar una consulta con parámetros
-    public static function query($sql, $params = [])
+    public static function getRecords($sql, $params = [])
     {
         $statement = self::prepareAndExecute($sql, $params);
         return $statement->fetchAll(PDO::FETCH_OBJ);
@@ -57,7 +57,7 @@ class DataBase
     public static function getColumnsNames($table)
     {
         $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = :table";
-        return self::query($sql, ['table' => $table]);
+        return self::getRecords($sql, ['table' => $table]);
     }
 
     // Ejecutar una transacción

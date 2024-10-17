@@ -13,7 +13,7 @@ class Model
         $model = new static();
         $sql = "SELECT * FROM " . $model->table . " WHERE " . $model->primaryKey . " = :id";
         $params = ["id" => $id];
-        $result = DataBase::getRecord($sql, $params);
+        $result = DataBase::getRecords($sql, $params);
 
         // Asignar los valores devueltos al modelo si hay un resultado
         if ($result) {

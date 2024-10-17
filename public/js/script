@@ -1,0 +1,113 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+    const arrow = document.querySelector('.scroll-down-arrow');
+    arrow.addEventListener('click', function() {
+      window.scrollBy({
+        top: window.innerHeight,
+        behavior: 'smooth'
+      });
+    });
+  });
+  window.addEventListener("scroll", function() {
+    var goTopButton = document.getElementById("goTopButton");
+  
+    if (window.pageYOffset > 100) {
+      goTopButton.classList.add("active");
+    } else {
+      goTopButton.classList.remove("active");
+    }
+  });
+  
+  document.getElementById("goTopButton").addEventListener("click", function() {
+    scrollToTop(1000); // 1000 ms (1 segundo) de duración del desplazamiento
+  });
+  
+  function scrollToTop(duration) {
+    var start = window.pageYOffset,
+      startTime = "now" in window.performance ? performance.now() : new Date().getTime();
+  
+    function scroll() {
+      var now = "now" in window.performance ? performance.now() : new Date().getTime(),
+        time = Math.min(1, (now - startTime) / duration),
+        easedTime = time < 0.5 ? 2 * time * time : -1 + (4 - 2 * time) * time;
+  
+      window.scrollTo(0, start - start * easedTime);
+  
+      if (time < 1) {
+        requestAnimationFrame(scroll);
+      }
+    }
+  
+    requestAnimationFrame(scroll);
+  }
+  function toggleMenu() {
+    var navLinks = document.querySelector('.nav-links');
+    var menuToggle = document.querySelector('.menu-toggle');
+  
+    navLinks.classList.toggle('show');
+    menuToggle.classList.toggle('show');
+  }
+  
+  
+  
+  
+
+function togglePasswordVisibility() {
+    var x = document.getElementById("myInput");
+    var eyeIcon = document.getElementById('eyeIcon');
+
+    if (x.type === "password") {
+        x.type = "text";  // Muestra la contraseña
+        eyeIcon.className = "fa-solid fa-eye"; // Cambia el ícono a "fa-eye"
+    } else {
+        x.type = "password";  // Oculta la contraseña
+        eyeIcon.className = "fa-solid fa-eye-slash"; // Cambia el ícono a "fa-eye-slash"
+    }
+}
+
+
+document.getElementById('logoutButton').addEventListener('click', function() {
+    // Realiza una solicitud AJAX para cerrar sesión
+    fetch('/account/logout', {
+        method: 'POST', // Asegúrate de usar el método adecuado
+        credentials: 'include' // Incluye las cookies de la sesión
+    })
+    .then(response => {
+        if (response.ok) {
+            // Limpia el local storage
+            localStorage.clear();
+
+            // Redirige al usuario a la página de inicio
+            window.location.href = '/home/index';
+        } else {
+            // Manejo de errores, si es necesario
+            console.error('Error al cerrar sesión');
+        }
+    })
+    .catch(error => {
+        console.error('Error de red:', error);
+    });
+});
+
+
+
+function logout() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/account/logout", true);
+    xhr.withCredentials = true; // Para incluir las cookies de la sesión
+
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            localStorage.clear();
+            window.location.href = '/home/index';
+        } else {
+            console.error('Error al cerrar sesión');
+        }
+    };
+
+    xhr.onerror = function () {
+        console.error('Error de red:', xhr.statusText);
+    };
+
+    xhr.send();
+}

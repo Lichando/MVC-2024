@@ -1,0 +1,143 @@
+
+ .navbar ul{
+    display: none;
+}
+
+
+
+.login{
+    background:linear-gradient(#2f3a31, #295330);
+    width: 100vw; /* Ocupar el ancho total de la ventana */
+    height: 100vh; /* Ocupar el alto total de la ventana */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-card {
+    width: 300px;
+    height: 300px;
+    background-color: white;
+    margin: 20px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+}
+
+.login-card h2{ 
+    font-size: 20px;
+    color: #458f10;
+    font-weight: 600;
+}
+
+.login-camps {
+    display: flex;
+    align-items: center;
+    margin: 20px;
+    justify-content: center;
+    }
+
+.icon{
+    width: 40px;
+    height: 30px;
+    border: 1px #458f10 solid;
+    border-right: 1px grey solid ;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+} 
+.icon{
+    width: 40px;
+    height: 30px;
+    border: 1px #458f10 solid;
+    border-right: 1px grey solid ;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+} 
+.icon2{
+    width: 40px;
+    height: 30px;
+    border: 1px #458f10 solid;
+    border-left:none;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+} 
+
+i{
+    cursor: pointer;
+}
+
+
+svg{
+    fill:#000000;
+}
+
+input{
+    width: auto;
+    height: 26px;
+    padding: 2px;
+    border: 1px #458f10 solid;
+    outline: none;
+    border-left: none;
+    border-right: none;
+}
+input:hover{
+    border-left: none;
+    
+}
+
+.input-icon {
+    color: #191919;
+    width: 20px;
+    height: 20px;
+
+ }
+
+
+ .login-pass {
+    font-size: 10px;
+    color: rgb(100, 100, 100);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.submit{
+    background-color: #539c17;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+  }
+  
+
+  @media only screen and (max-width: 767px) {
+main{
+    background:  linear-gradient(#2f3a31, #295330);
+}
+.login{
+    width: 100% !important;
+    max-height: 100%;
+    padding: 65%;
+}
+
+
+
+  }

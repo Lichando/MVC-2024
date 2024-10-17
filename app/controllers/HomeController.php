@@ -2,7 +2,7 @@
 namespace app\controllers;
 use \Controller;
 use \Response;
-use \DataBase;
+
 
 class HomeController extends Controller
 {
@@ -20,20 +20,24 @@ class HomeController extends Controller
 		$head = SiteController::head();
 		$nav = SiteController::nav();
 		$path = static::path();
+		$footer = SiteController::footer();
 		Response::render($this->viewDir(__NAMESPACE__),"inicio", [
 																"title" => 'Inicio MVC',
 																 "head" => $head,
 																 "nav" => $nav,	
+																 "footer" => $footer,	
 																]);
 	}
 
 	public function action404(){
 		$head = SiteController::head();
 		$nav = SiteController::nav();
+		$footer = SiteController::footer();
 		Response::render($this->viewDir(__NAMESPACE__),"404", [
 																"title" => $this->title.' 404',
 																"head" => $head,
-																"nav" => $nav,	
+																"nav" => $nav,
+																"footer" => $footer,		
 															   ]);
 	}
 
