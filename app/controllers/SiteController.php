@@ -16,17 +16,23 @@ class SiteController extends Controller
 		$head = str_replace('#PATH#', self::$ruta, $head);
 		return $head;
 	}
-	public static function nav(){
+	public static function header(){
 		static::path();
-		$nav = file_get_contents(APP_PATH.'/views/inc/nav.php');
-		$nav = str_replace('#PATH#', self::$ruta, $nav);
-		return $nav;
+		$header = file_get_contents(APP_PATH.'/views/inc/header.php');
+		$header = str_replace('#PATH#', self::$ruta, $header);
+		return $header;
 	}
 	public static function footer(){
 		static::path();
 		$footer = file_get_contents(APP_PATH.'/views/inc/footer.php');
 		$footer = str_replace('#PATH#', self::$ruta, $footer);
 		return $footer;
+	}
+	public static function scripts(){
+		static::path();
+		$scripts = file_get_contents(APP_PATH.'/views/inc/script.php');
+		$scritps = str_replace('#PATH#', self::$ruta, $scripts);
+		return $scripts;
 	}
 
 	

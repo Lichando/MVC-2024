@@ -18,25 +18,27 @@ class HomeController extends Controller
 
 	public function actionInicio(){
 		$head = SiteController::head();
-		$nav = SiteController::nav();
+		$header = SiteController::header();
+		$scripts = SiteController::scripts();
 		$path = static::path();
 		$footer = SiteController::footer();
 		Response::render($this->viewDir(__NAMESPACE__),"inicio", [
 																"title" => 'Inicio MVC',
 																 "head" => $head,
-																 "nav" => $nav,	
+																 "header" => $header,	
+																 "scripts" => $scripts,	
 																 "footer" => $footer,	
 																]);
 	}
 
 	public function action404(){
 		$head = SiteController::head();
-		$nav = SiteController::nav();
+		$header = SiteController::header();
 		$footer = SiteController::footer();
 		Response::render($this->viewDir(__NAMESPACE__),"404", [
 																"title" => $this->title.' 404',
 																"head" => $head,
-																"nav" => $nav,
+																"header" => $header,	
 																"footer" => $footer,		
 															   ]);
 	}

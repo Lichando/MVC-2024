@@ -11,13 +11,17 @@ class UserModel extends Model
     protected $primaryKey = "id";
     protected $secundaryKey = "email";
     public $email;
+    public $id; // Añadimos esta propiedad
 
-    // Método para buscar un usuario por su email
+    public $contrasena; // Añadimos esta propiedad
+    public $rol;        // Añadimos esta propiedad
+
+         // Método para buscar un usuario por su email
     public static function findEmail($email) {
         $model = new static();
         $sql = "SELECT * FROM " . $model->table . " WHERE " . $model->secundaryKey . " = :email";
         $params = ["email" => $email];
-        $result = DataBase::query($sql, $params);
+        $result = DataBase::getRecords($sql, $params);
 
         if ($result) {
             foreach ($result as $key => $value) {
@@ -29,29 +33,47 @@ class UserModel extends Model
         }
     }
 
+    public static function createUser($email, $hashedPassword, $rol) {
+        $model = new static();
+        $sql = "INSERT INTO " . $model->table . " (email, contrasena, rol) VALUES (:email, :contrasena, :rol)";
+        
+        try {
+            $params = [
+                'email' => $email,
+                'contrasena' => $hashedPassword,
+                'rol' => $rol
+            ];
+            $resultado = DataBase::execute($sql, $params);
+            return $resultado; // Retorna true si la inserción fue exitosa
+        } catch (PDOException $e) {
+            return false; // Si hay un error, retorna false
+        }
+    }
+    
     // Método para cambiar la contraseña
     public static function changePassword($newPass, $token) {
         $model = new static();
-        $hashedPassword = password_hash($newPass, PASSWORD_BCRYPT); // Asegúrate de hashear la nueva contraseña
-        $sql = "UPDATE " . $model->table . " SET password = :password WHERE token = :token";
+        $hashedPassword = password_hash($newPass, PASSWORD_BCRYPT); // Hasheamos la nueva contraseña
+        $sql = "UPDATE " . $model->table . " SET contrasena = :contrasena WHERE token = :token";
 
         try {
             $params = [
-                'password' => $hashedPassword,
+                'contrasena' => $hashedPassword,
                 'token' => $token
             ];
-            $resultado = DataBase::execute($sql, $params); // Usa execute para ejecutar la consulta
+            $resultado = DataBase::execute($sql, $params);
             return [
-                'state' => $resultado, // Retorna el estado del resultado
+                'state' => $resultado,
                 'notification' => $resultado ? "Contraseña actualizada exitosamente." : "Error al actualizar la contraseña."
             ];
         } catch (PDOException $e) {
             return [
                 'state' => false,
-                'notification' => "Error en cambiar la contraseña: " . $e->getMessage() // Mensaje de error
+                'notification' => "Error en cambiar la contraseña: " . $e->getMessage()
             ];
         }
     }
+
 	
 	public function actionResetPassword() {
 		// Suponiendo que recibes el email y el nuevo password de un formulario
@@ -83,7 +105,7 @@ class UserModel extends Model
 		$model = new static();
 		$sql = "SELECT * FROM " . $model->table . " WHERE token = :token";
 		$params = ["token" => $token];
-		$result = DataBase::query($sql, $params);
+		$result = DataBase::getRecords($sql, $params);
 	
 		if ($result) {
 			foreach ($result as $key => $value) {

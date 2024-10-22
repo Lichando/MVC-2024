@@ -3,7 +3,7 @@ namespace app\controllers;
 
 use \Controller;
 use \Response;
-use \SessionController; // Para gestionar sesiones
+use app\controllers\SessionController; // Para gestionar sesiones
 use app\models\PropiedadModel; // Asegúrate de tener el modelo correcto
 class PropiedadesController extends Controller
 {
@@ -11,11 +11,11 @@ class PropiedadesController extends Controller
     public function actionList() {
         $propiedades = PropiedadModel::getAllProperties(); // Obtiene todas las propiedades
         $head = SiteController::head();
-        $nav = SiteController::nav();
-        Response::render($this->viewDir(__NAMESPACE__), "list", [
+        $header = SiteController::header();
+        Response::render($this->viewDir(__NAMESPACE__), "lista", [
             "title" => 'Listado de Propiedades',
             "head" => $head,
-            "nav" => $nav,
+            "header" => $header,
             "propiedades" => $propiedades,
         ]);
     }
@@ -24,14 +24,14 @@ class PropiedadesController extends Controller
     public function actionDetail($id) {
         $propiedad = PropiedadModel::getPropertyById($id); // Obtiene la propiedad por ID
         if (!$propiedad) {
-            Response::redirect('/propiedad/list'); // Redirige si la propiedad no existe
+            Response::redirect('/propiedad/lista'); // Redirige si la propiedad no existe
         }
         $head = SiteController::head();
-        $nav = SiteController::nav();
+        $header = SiteController::header();
         Response::render($this->viewDir(__NAMESPACE__), "detail", [
             "title" => 'Detalles de la Propiedad',
             "head" => $head,
-            "nav" => $nav,
+            "header" => $header,
             "propiedad" => $propiedad,
         ]);
     }
@@ -43,11 +43,11 @@ class PropiedadesController extends Controller
         }
         
         $head = SiteController::head();
-        $nav = SiteController::nav();
+        $header = SiteController::header();
         Response::render($this->viewDir(__NAMESPACE__), "add", [
             "title" => 'Agregar Nueva Propiedad',
             "head" => $head,
-            "nav" => $nav,
+            "header" => $header,
         ]);
     }
 
@@ -56,6 +56,6 @@ class PropiedadesController extends Controller
         // Aquí manejarías la lógica para guardar la propiedad en la base de datos
         $data = $_POST; // Sanitiza y valida
         PropiedadModel::create($data);
-        Response::redirect('/propiedad/list'); // Redirige al listado de propiedades
+        Response::redirect('/propiedad/lista'); // Redirige al listado de propiedades
     }
 }

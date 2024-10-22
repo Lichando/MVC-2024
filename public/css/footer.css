@@ -1,0 +1,30 @@
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0; /* Espaciado superior e inferior */
+    margin-top: auto; /* Asegura que el footer esté al fondo del contenedor */
+}
+
+.footer-content {
+    max-width: 1200px; /* Máximo ancho del contenido del footer */
+    margin: 0 auto; /* Centra el contenido */
+    padding: 0 20px; /* Espaciado lateral */
+}
+
+.footer-links {
+    margin-top: 10px; /* Espacio entre el texto y los enlaces */
+}
+
+.footer-links a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px; /* Espaciado entre los enlaces */
+    transition: color 0.3s; /* Transición suave para el color */
+}
+
+.footer-links a:hover {
+    color: #ffa500; /* Color al pasar el mouse por encima */
+}

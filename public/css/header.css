@@ -1,0 +1,58 @@
+header {
+    background-color: #fff; /* Cambia esto al color de fondo que desees */
+    padding: 10px 20px; /* Espaciado alrededor del header */
+}
+
+.header-container {
+    display: flex; /* Usamos flexbox para alinear elementos horizontalmente */
+    align-items: center; /* Centra verticalmente los elementos */
+    justify-content: space-between; /* Espacio entre logo, nav y mi cuenta */
+}
+
+.logo img {
+    width:150px;
+    height: 112px; /* Ajusta la altura del logo según tus necesidades */
+    margin-left: 30px;
+}
+
+nav {
+    display: flex; /* Alinea los elementos de navegación horizontalmente */
+    justify-content: center; /* Centra los enlaces de navegación */
+    flex-grow: 1; /* Permite que la nav ocupe el espacio disponible */
+}
+
+nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+    text-transform: uppercase;
+    font-weight: 800;
+}
+nav a:hover {
+    color: #099b04;;
+    
+}
+
+.mi-cuenta {
+    font-size: 18px; /* Ajusta el tamaño de la fuente */
+    margin-right: 50px;
+    
+}
+
+.mi-cuenta a {
+    margin-left: 30px;
+    width: 80px;
+    height: auto;
+    border: 2px #000000 solid;
+    background-color: #044e01;
+    border-radius: 25px;
+    text-decoration: none; /* Quita el subrayado del enlace */
+    color: #ffffff; /* Color del texto */
+    padding: 15px 33px;
+}
+
+.mi-cuenta a:hover {
+    color: #ffffff; /* Cambia el color al pasar el mouse */
+    background-color: #099b04;
+}

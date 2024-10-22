@@ -1,0 +1,369 @@
+.slider-container {
+    position: relative;
+    height: 500px;
+    /* Aumenta la altura del contenedor del slider */
+    overflow: hidden;
+}
+
+.slider {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    min-width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ajusta la imagen para cubrir el área */
+}
+
+.buscador {
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Fondo blanco con más opacidad */
+    padding: 30px;
+    /* Aumenta el padding */
+    border-radius: 10px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    /* Sombra más pronunciada */
+    position: absolute;
+    /* Posicionar el buscador sobre el slider */
+    top: 50%;
+    /* Centrar verticalmente */
+    left: 50%;
+    /* Centrar horizontalmente */
+    transform: translate(-50%, -50%);
+    /* Centrar completamente */
+    width: 80%;
+    /* Ajusta el ancho según lo necesites */
+    max-width: 800px;
+    /* Establece un ancho máximo */
+    z-index: 10;
+    /* Asegúrate de que esté por encima del slider */
+}
+
+.buscador form {
+    display: flex;
+    flex-direction: column;
+    /* Coloca los elementos en columna */
+}
+
+.buscador label {
+    margin: 10px 0 5px;
+    /* Margen para los labels */
+}
+
+.buscador select,
+.buscador input {
+    padding: 10px;
+    /* Agrega padding a los inputs y selects */
+    margin-bottom: 15px;
+    /* Margen inferior para espaciar los campos */
+    border: 1px solid #ccc;
+    /* Borde ligero */
+    border-radius: 5px;
+    /* Bordes redondeados para inputs */
+}
+
+.buscador button {
+    padding: 10px;
+    background-color: #007bff;
+    /* Color de fondo del botón */
+    color: white;
+    /* Color del texto del botón */
+    border: none;
+    /* Sin borde */
+    border-radius: 5px;
+    /* Bordes redondeados para el botón */
+    cursor: pointer;
+    /* Cambia el cursor al pasar el mouse */
+}
+
+.buscador button:hover {
+    background-color: #0056b3;
+    /* Color al pasar el mouse */
+}
+
+
+
+.estadisticas {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+    /* Fondo ligero para destacar */
+}
+
+.estadisticas h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+}
+
+.estadistica {
+    display: inline-block;
+    /* Para que se alineen horizontalmente */
+    margin: 0 20px;
+    /* Espaciado entre estadísticas */
+    padding: 20px;
+    background-color: #ffffff;
+    /* Fondo blanco para cada estadística */
+    border-radius: 8px;
+    /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Sombra para efecto de profundidad */
+}
+
+.numero {
+    font-size: 3rem;
+    /* Tamaño grande para los números */
+    color: #007bff;
+    /* Color del número */
+}
+
+.texto {
+    font-size: 1.2rem;
+    /* Tamaño de texto más pequeño */
+    color: #333;
+    /* Color del texto */
+}
+
+
+.razones-elejir {
+    padding: 40px 20px;
+    background-color: #eef9f9;
+    /* Fondo ligero con un toque fresco */
+    text-align: center;
+}
+
+.razones-elejir h2 {
+    font-size: 2.5rem;
+    color: #007BFF;
+    /* Color azul llamativo */
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+.razones {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.razon {
+    flex: 1 1 250px;
+    /* Ajustar el tamaño de las tarjetas */
+    margin: 15px;
+    padding: 20px;
+    background-color: #ffffff;
+    /* Fondo blanco */
+    border-radius: 12px;
+    /* Bordes redondeados */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    /* Sombra más pronunciada */
+    transition: transform 0.3s, box-shadow 0.3s;
+    /* Animaciones suaves */
+    position: relative;
+    /* Para el efecto de enfoque */
+    overflow: hidden;
+    /* Para recortar el contenido que se desborda */
+}
+
+.razon:hover {
+    transform: translateY(-5px);
+    /* Levantar tarjeta en hover */
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+    /* Aumentar sombra en hover */
+}
+
+.razon h3 {
+    font-size: 1.7rem;
+    margin-bottom: 10px;
+    color: #343a40;
+    /* Color gris oscuro */
+}
+
+.razon p {
+    font-size: 1rem;
+    color: #555;
+    /* Color gris claro para el texto */
+}
+
+/* Estilo adicional para emojis */
+.razon h3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.razon h3 span {
+    margin-right: 10px;
+    /* Espacio entre emoji y texto */
+    font-size: 2rem;
+    /* Tamaño del emoji */
+}
+
+.emprendimientos-destacados {
+    text-align: center;
+    padding: 50px 0;
+    background-color: #f9f9f9;
+  }
+  
+  .emprendimientos-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .emprendimiento {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 280px;
+    transition: transform 0.3s ease;
+  }
+  
+  .emprendimiento:hover {
+    transform: scale(1.05);
+  }
+  
+  .emprendimiento img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .emprendimiento-info {
+    padding: 15px;
+  }
+  
+  .emprendimiento-titulo {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .emprendimiento-descripcion {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  .emprendimiento-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .emprendimiento-link:hover {
+    text-decoration: underline;
+  }
+
+
+  .propiedades-destacadas {
+    text-align: center;
+    padding: 50px 0;
+    background-color: #eef2f7;
+  }
+  
+  .propiedades-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .propiedad {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 280px;
+    transition: transform 0.3s ease;
+  }
+  
+  .propiedad:hover {
+    transform: scale(1.05);
+  }
+  
+  .propiedad img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .propiedad-info {
+    padding: 15px;
+  }
+  
+  .propiedad-titulo {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .propiedad-descripcion {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  .propiedad-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .propiedad-link:hover {
+    text-decoration: underline;
+  }
+  
+  .inmobiliarias-section {
+    text-align: center;
+    padding: 50px 0;
+    background-color: #f7f9fc; /* Fondo de la sección */
+  }
+  
+  .inmobiliarias-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 1200px; /* Limita el ancho máximo */
+    margin: 0 auto;
+    overflow: hidden; /* Oculta el desbordamiento de las imágenes */
+  }
+  
+  .inmobiliarias-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out; /* Transición suave al mover el slider */
+  }
+  
+  .inmobiliaria-item {
+    min-width: 200px; /* Ancho mínimo para cada inmobiliaria */
+    margin: 0 15px; /* Separación entre inmobiliarias */
+    text-align: center;
+  }
+  
+  .inmobiliaria-item img {
+    width: 100%;
+    height: auto; /* Asegura que la imagen no se distorsione */
+    border-radius: 10px;
+  }
+  
+  .inmobiliaria-item p {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+  }
+  

@@ -26,4 +26,19 @@ class Response
             throw new Exception("La vista $view no se encuentra en el directorio $viewDir");
         }
     }
+        // Método para redirigir a otra URL
+    public static function redirect($url)
+    {
+        // Verifica si la URL no está vacía
+        if (empty($url)) {
+            throw new Exception("La URL de redirección no puede estar vacía.");
+        }
+
+        // Enviar el encabezado de redirección
+        header("Location: $url");
+        
+        // Detener la ejecución del script
+        exit; 
+    }
+
 }
