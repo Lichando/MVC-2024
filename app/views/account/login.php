@@ -34,7 +34,7 @@
                 </div>
             </form>
 
-            <p>No tienes una cuenta? <a href="/account/register">Regístrate aquí</a></p>
+            <p>No tienes una cuenta? <a href="register">Regístrate aquí</a></p>
         </div>
 
     </main>

@@ -10,6 +10,7 @@ class DataBase
     private static $dbpass = "";
 
     private static $dbh = null; // Database handler
+    private static $instance = null; // Instancia estática para el patrón Singleton
     private static $error;
 
     // Obtener una instancia de la conexión PDO
@@ -58,6 +59,14 @@ class DataBase
     {
         $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = :table";
         return self::getRecords($sql, ['table' => $table]);
+    }
+
+    // Método para obtener la instancia de conexión a la base de datos
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new self(); // Cambiar Database() por self()
+        }
+        return self::$instance->connection(); // Llama al método connection() para obtener la conexión a la base de datos
     }
 
     // Ejecutar una transacción
