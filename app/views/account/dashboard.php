@@ -21,19 +21,10 @@
                 <li><a href="logout">Cerrar sesión</a></li>
             </ul>
         </nav>
-
-        <div class="content">
-            <h1>Bienvenido al Dashboard</h1>
-            <p>Esta es la página principal del panel de control. Aquí puedes acceder a las diferentes secciones del sitio.</p>
-            <section>
-                <h2>Resumen de actividades</h2>
-                <p>Aquí puedes ver un resumen de tus actividades recientes.</p>
-            </section>
-        </div>
     </main>
 
     <footer>
-    <!--    <?= $footer; ?> Renderiza el pie de página, si lo tienes -->
+    <!--    <?= $footerDash; ?> Renderiza el pie de página, si lo tienes -->
     </footer>
 </body>
 

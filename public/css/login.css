@@ -48,3 +48,13 @@
     background-color: #218838; /* Color verde más oscuro al pasar el mouse */
 }
 
+/* Estilos para el mensaje de error */
+.login-container .error p {
+    background-color: #f44336;
+    color: #ffffff;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
