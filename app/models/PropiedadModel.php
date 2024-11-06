@@ -5,17 +5,21 @@ use \DataBase;
 use \Model;
 use PDOException;
 
-
-class PropiedadModel
+class PropiedadModel  extends Model
 {
-    // Método para obtener todas las propiedades
-    public static function getAllProperties() {
-        // Consulta SQL para obtener todas las propiedades
+    // Método para obtener todas las propiedades con opción de búsqueda
+    public static function getAllProperties($busqueda = '') {
+        // Consulta SQL para obtener todas las propiedades, filtrando por nombre si se proporciona
         $query = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.id_inm, img.url AS imagen 
                   FROM propiedades p 
-                  LEFT JOIN imagenes img ON img.id = p.id_img"; // Obtiene la imagen relacionada
+                  LEFT JOIN imagenes img ON img.id = p.id_img";
+        
+        // Añadir condición de búsqueda si se proporciona
+        if (!empty($busqueda)) {
+            $query .= " WHERE p.nombre LIKE :busqueda";
+        }
 
-        return Database::getRecords($query); // Asegúrate de que esta función devuelva los resultados correctamente
+        return Database::getRecords($query, ['busqueda' => '%' . $busqueda . '%']); // Asegúrate de que esta función devuelva los resultados correctamente
     }
 
     // Método para obtener una propiedad por su ID
@@ -24,9 +28,11 @@ class PropiedadModel
                   FROM propiedades p 
                   LEFT JOIN imagenes img ON img.id = p.id_img 
                   LEFT JOIN inmobiliarias inm ON inm.id = p.id_inm 
-                  WHERE p.id = :id";
-        
-        return Database::getRecords($query, ['id' => $id]); // Aquí deberías manejar la consulta con parámetros
+                  WHERE p.id = :id LIMIT 1"; // LIMIT 1 para asegurarse de que solo se devuelve un resultado
+
+        $result = Database::getRecords($query, ['id' => $id]);
+
+        return !empty($result) ? $result[0] : null; // Si no se encuentra la propiedad, devuelve null
     }
 
     // Método para crear una nueva propiedad
@@ -37,7 +43,6 @@ class PropiedadModel
         try {
             return Database::ejecutar($query, $data); // Maneja la inserción en la base de datos
         } catch (PDOException $e) {
-            // Manejo de errores, puedes registrarlo o lanzar una excepción
             throw new PDOException("Error al crear la propiedad: " . $e->getMessage());
         }
     }
@@ -58,9 +63,8 @@ class PropiedadModel
         }
     }
 
-
-     // Método para eliminar una propiedad (baja lógica)
-     public static function delete($id) {
+    // Método para eliminar una propiedad (baja lógica)
+    public static function bajaPropiedad($id) {
         $query = "UPDATE propiedades 
                   SET activo = 0 
                   WHERE id = :id";
@@ -81,5 +85,23 @@ class PropiedadModel
                   WHERE p.activo = 1"; // Solo propiedades activas
 
         return Database::getRecords($query); // Asegúrate de que esta función devuelva los resultados correctamente
+    }
+    public static function getInmobiliariaIdByUserId($userId) {
+        // Consulta SQL para obtener el id de la inmobiliaria asociada al usuario
+        $query = "SELECT id FROM inmobiliarias WHERE user_id = :user_id LIMIT 1"; // Limitamos a un solo resultado
+
+        try {
+            // Ejecutamos la consulta con el parámetro user_id
+            $result = Database::getRecords($query, ['user_id' => $userId]);
+
+            // Si encontramos un resultado, retornamos el ID de la inmobiliaria
+            if (!empty($result)) {
+                return $result[0]['id'];  // Devuelve el id de la inmobiliaria
+            } else {
+                return null;  // Si no hay resultado, retorna null
+            }
+        } catch (PDOException $e) {
+            throw new PDOException("Error al obtener el ID de la inmobiliaria: " . $e->getMessage());
+        }
     }
 }

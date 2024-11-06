@@ -1,4 +1,5 @@
 <?php
+
 namespace app\models;
 
 use \DataBase;
@@ -8,128 +9,97 @@ use PDOException;
 class UserModel extends Model
 {
     protected $table = "usuarios";
-    protected $primaryKey = "id";
-    protected $secundaryKey = "email";
-    public $email;
-    public $id;
+    protected $primaryKey = "idPrimaria";
+    protected $secundaryKey = "emailÍndice";  // Cambié 'email' por 'emailÍndice' según tu esquema
+    public $idPrimaria;
+    public $nombre;
+    public $emailÍndice;
     public $contrasena;
-    public $rol;
+    public $fecha_registro;
+    public $activo;
+    public $rolÍndice;
 
-
+    // Método para autenticar al usuario por email y contraseña
     public static function authenticate($email, $password)
     {
-        // Prepara la consulta para buscar el usuario
-        $sql = "SELECT * FROM usuarios WHERE email = :email LIMIT 1";
+        $sql = "SELECT * FROM usuarios WHERE emailÍndice = :email LIMIT 1";
         $users = DataBase::getRecords($sql, ['email' => $email]);
-    
-        // Verifica si el usuario existe
+
         if (!empty($users)) {
-            $user = $users[0]; // Obtiene el primer usuario
-            // Verifica que la propiedad password exista
+            $user = $users[0];
             if (isset($user->contrasena)) {
-                // Verifica la contraseña
                 if (password_verify($password, $user->contrasena)) {
-                    return $user; // Retorna el usuario si la autenticación es exitosa
+                    return $user;
                 }
-            } else {
-                throw new PDOException("La propiedad 'password' no existe en el usuario.");
             }
         }
-        return null; // Retorna null si el usuario no fue encontrado o la contraseña es incorrecta
+        return null;
     }
-    
 
     // Método para buscar un usuario por su email
-    public static function findEmail($email) {
-        $model = new static();
-        $sql = "SELECT * FROM " . $model->table . " WHERE " . $model->secundaryKey . " = :email";
-        $params = ["email" => $email];
-        $result = DataBase::getRecords($sql, $params);
-
-        if ($result) {
-            foreach ($result as $key => $value) {
-                $model->$key = $value;
-            }
-            return $model;
-        }
-        return null;
+    public static function findEmail($email)
+    {
+        $sql = "SELECT * FROM usuarios WHERE emailÍndice = :email";
+        $params = ['email' => $email];
+        return DataBase::getRecords($sql, $params);
     }
 
-    public static function createUser($nombre, $email, $hashedPassword, $rol = 4) {
-        $model = new static();
-        $sql = "INSERT INTO " . $model->table . " (nombre, email, contrasena, rol, fecha_registro) 
-                VALUES (:nombre, :email, :contrasena, :rol, CURDATE())";
+    // Método para crear un nuevo usuario
+    public static function createUser($nombre, $email, $hashedPassword, $rol = 4)
+    {
+        $sql = "INSERT INTO usuarios (nombre, emailÍndice, contrasena, rolÍndice, fecha_registro, activo) 
+                VALUES (:nombre, :email, :contrasena, :rol, CURRENT_TIMESTAMP, 1)";
         
-        try {
-            $params = [
-                'nombre' => $nombre,
-                'email' => $email,
-                'contrasena' => $hashedPassword,
-                'rol' => $rol
-            ];
-            return DataBase::execute($sql, $params);
-        } catch (PDOException $e) {
-            error_log("Error al crear usuario: " . $e->getMessage()); // Log de error
-            return false;
-        }
-    }
+        $params = [
+            'nombre' => $nombre,
+            'email' => $email,
+            'contrasena' => $hashedPassword,
+            'rol' => $rol
+        ];
 
-    
+        return DataBase::execute($sql, $params);
+    }
 
     // Método para cambiar la contraseña
-    public static function changePassword($newPass, $token) {
-        $model = new static();
+    public static function changePassword($newPass, $token)
+    {
         $hashedPassword = password_hash($newPass, PASSWORD_BCRYPT);
-        $sql = "UPDATE " . $model->table . " SET contrasena = :contrasena WHERE token = :token";
+        $sql = "UPDATE usuarios SET contrasena = :contrasena WHERE token = :token";
 
-        try {
-            $params = [
-                'contrasena' => $hashedPassword,
-                'token' => $token
-            ];
-            $resultado = DataBase::execute($sql, $params);
-            return [
-                'state' => $resultado,
-                'notification' => $resultado ? "Contraseña actualizada exitosamente." : "Error al actualizar la contraseña."
-            ];
-        } catch (PDOException $e) {
-            error_log("Error al cambiar la contraseña: " . $e->getMessage()); // Log de error
-            return [
-                'state' => false,
-                'notification' => "Error en cambiar la contraseña: " . $e->getMessage()
-            ];
-        }
+        $params = [
+            'contrasena' => $hashedPassword,
+            'token' => $token
+        ];
+
+        return DataBase::execute($sql, $params);
     }
 
-    public function actionResetPassword() {
-        $email = $_POST['email'];
-        $newPassword = $_POST['new_password'];
-        $token = $_POST['token'];
-
-        $user = UserModel::findEmail($email);
-
-        if ($user) {
-            $result = UserModel::changePassword($newPassword, $token);
-            echo $result['notification'];
-        } else {
-            echo "El usuario no existe.";
-        }
+    // Método para obtener un usuario por su token
+    public static function getUserByToken($token)
+    {
+        $sql = "SELECT * FROM usuarios WHERE token = :token";
+        return DataBase::getRecords($sql, ['token' => $token]);
     }
 
-    public static function getUserByToken($token) {
-        $model = new static();
-        $sql = "SELECT * FROM " . $model->table . " WHERE token = :token";
-        $params = ["token" => $token];
-        $result = DataBase::getRecords($sql, $params);
+    // Método para actualizar la información del usuario
+    public static function updateUser($id, $data)
+    {
+        $sql = "UPDATE usuarios
+                SET nombre = :nombre,
+                    emailÍndice = :email,
+                    contrasena = :contrasena,
+                    rolÍndice = :rol,
+                    activo = :activo
+                WHERE idPrimaria = :id";
 
-        if ($result) {
-            foreach ($result as $key => $value) {
-                $model->$key = $value;
-            }
-            return $model;
-        }
-        return null;
+        $data['id'] = $id; // Añadimos el ID a los parámetros
+        return DataBase::execute($sql, $data);
+    }
+
+    // Método para obtener la lista de usuarios
+    public static function getAllUsers()
+    {
+        $sql = "SELECT * FROM usuarios";
+        return DataBase::getRecords($sql);
     }
 }
-
-

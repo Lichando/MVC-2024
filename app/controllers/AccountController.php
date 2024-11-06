@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controllers;
 
 use \Controller;
@@ -15,11 +16,19 @@ class AccountController extends Controller
 
     public function actionLogin()
     {
-        // Si el usuario ya está autenticado, redirigir al dashboard
+        // Si el usuario ya está autenticado, redirigir según el rol
         if (SessionController::isLoggedIn()) {
-            Response::redirect('dashboard');
+            // Verificamos el rol para redirigir al dashboard correspondiente
+            $role = SessionController::getUserRole();
+            if ($role == 1 || $role == 2) { // Administrador o Empleado
+                Response::redirect('admin-dashboard'); // Redirigir al dashboard administrativo
+            } else {
+                Response::redirect('dashboard'); // Redirigir al dashboard de usuarios inmobiliarios
+            }
             return;
         }
+
+        // Procesar el formulario solo si es una solicitud POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
@@ -27,30 +36,43 @@ class AccountController extends Controller
             // Validación de entrada
             if (empty($email) || empty($password)) {
                 $error = "Por favor completa todos los campos.";
-                $this->renderLoginView($error);
-                return;
-            }
-
-            // Autenticación del usuario
-            $user = UserModel::authenticate($email, $password);
-
-            if ($user) {
-                // Almacenar en sesión
-                SessionController::login($user->id, $user->rol);
-                // Redireccionar al dashboard
-                Response::redirect('dashboard');
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $error = "El email proporcionado no es válido.";
             } else {
-                $error = "Email o contraseña incorrectos.";
-                $this->renderLoginView($error);
-            }
-        } else {
-            $this->renderLoginView();
-        }
-    }
+                // Autenticación del usuario
+                $user = UserModel::authenticate($email, $password);
 
-    // Método para renderizar la vista de login
-    private function renderLoginView($error = null)
-    {
+                if ($user) {
+                    // Almacenar en sesión
+                    SessionController::login($user->id, $user->rol);
+
+                    // Redirigir según el rol
+                    if ($user->rol == 1 || $user->rol == 2) {
+                        Response::redirect('admin-dashboard'); // Redirigir al dashboard de administración
+                    } else {
+                        Response::redirect('dashboard'); // Redirigir al dashboard de inmobiliarios
+                    }
+                    return;
+                } else {
+                    $error = "Email o contraseña incorrectos.";
+                }
+            }
+
+            // Renderizar la vista de login con el error
+            $head = SiteController::head();
+            $header = SiteController::header();
+            $footer = SiteController::footer();
+            Response::render($this->viewDir(__NAMESPACE__), "login", [
+                "title" => 'Iniciar Sesión',
+                "head" => $head,
+                "header" => $header,
+                "footer" => $footer,
+                "error" => $error,
+            ]);
+            return;
+        }
+
+        // Si no es un POST, solo renderizar la vista de login sin error
         $head = SiteController::head();
         $header = SiteController::header();
         $footer = SiteController::footer();
@@ -58,19 +80,48 @@ class AccountController extends Controller
             "title" => 'Iniciar Sesión',
             "head" => $head,
             "header" => $header,
-            "footer" => $footer,	
-            "error" => $error,
+            "footer" => $footer,
         ]);
     }
-
-    // Método para mostrar el dashboard
     public function actionDashboard()
     {
         // Comprobar si el usuario está autenticado
         if (!SessionController::isLoggedIn()) {
             Response::redirect('login'); // Redirigir al login si no está autenticado
+            return;
         }
-
+    
+        // Obtener el rol del usuario
+        $userRole = SessionController::getUserRole();
+    
+        // Variables que controlan las secciones del dashboard
+        $showPropertyManagement = false;
+        $showCommercialOptions = false;
+        $showAdminOptions = false;
+    
+        // Definir permisos según el rol del usuario
+        switch ($userRole) {
+            case 1: // Administrador
+            case 2: // Empleado
+                $showAdminOptions = true; // El administrador/empleado verá opciones administrativas
+                break;
+            case 3: // Administrador Inmobiliaria
+                $showPropertyManagement = true; // El administrador inmobiliario gestiona propiedades
+                break;
+            case 4: // Corredor Inmobiliario
+                $showPropertyManagement = true; // El corredor inmobiliario gestiona propiedades
+                break;
+            case 5: // Agente Inmobiliario
+                $showCommercialOptions = true; // El agente tiene acceso comercial
+                break;
+            case 6: // Cliente
+                // El cliente solo verá opciones de búsqueda de propiedades
+                break;
+            default:
+                Response::redirect('login'); // En caso de un rol no reconocido, redirigir a login
+                return;
+        }
+    
         // Renderizar la vista del Dashboard
         $head = SiteController::head();
         $header = SiteController::header();
@@ -78,91 +129,70 @@ class AccountController extends Controller
             "title" => 'Dashboard',
             "head" => $head,
             "header" => $header,
+            "showPropertyManagement" => $showPropertyManagement,
+            "showCommercialOptions" => $showCommercialOptions,
+            "showAdminOptions" => $showAdminOptions,
         ]);
     }
-
-
-
+    public function actionAdminDashboard()
+    {
+        // Comprobar si el usuario es administrador o empleado
+        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+            Response::redirect('login'); // Redirigir al login si no está autorizado
+            return;
+        }
+    
+        // Obtener el rol del usuario
+        $userRole = SessionController::getUserRole();
+    
+        // Renderizar la vista del Admin Dashboard
+        $head = SiteController::head();
+        $header = SiteController::header();
+        Response::render($this->viewDir(__NAMESPACE__), "admin-dashboard", [
+            "title" => 'Admin Dashboard',
+            "head" => $head,
+            "header" => $header,
+            // Aquí puedes agregar más variables de contenido específicas para la administración
+        ]);
+    }
+        
 
     public function actionRegister()
     {
+        // Procesar el formulario solo si es una solicitud POST
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nombre = $_POST['nombre'] ?? '';
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
             $rol = 4; // Rol predeterminado (Visitante)
 
-            // Verifica que los campos no estén vacíos
+            // Validación de entrada
             if (empty($nombre) || empty($email) || empty($password)) {
                 $error = "Por favor, completa todos los campos.";
-                $head = SiteController::head();
-                $header = SiteController::header();
-                $footer = SiteController::footer();
-                Response::render($this->viewDir(__NAMESPACE__), "register", [
-                    "title" => 'Registro',
-                    "head" => $head,
-                    "header" => $header,
-                    "footer" => $footer,	
-                    "error" => $error,
-                ]);
-                return;
-            }
-
-            // Verifica que el email tenga un formato válido
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $error = "El email proporcionado no es válido.";
-                $head = SiteController::head();
-                $header = SiteController::header();
-                $footer = SiteController::footer();
-                Response::render($this->viewDir(__NAMESPACE__), "register", [
-                    "title" => 'Registro',
-                    "head" => $head,
-                    "header" => $header,
-                    "footer" => $footer,	
-                    "error" => $error,
-                ]);
-                return;
-            }
-
-            // Verifica si el usuario ya existe
-            $existingUser = UserModel::findEmail($email);
-            if ($existingUser) {
-                $error = "El email ya está registrado.";
-                $head = SiteController::head();
-                $header = SiteController::header();
-                $footer = SiteController::footer();
-                Response::render($this->viewDir(__NAMESPACE__), "register", [
-                    "title" => 'Registro',
-                    "head" => $head,
-                    "header" => $header,
-                    "footer" => $footer,
-                    "error" => $error,
-                ]);
-                return;
-            }
-
-            // Hashear la contraseña
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-            // Guarda el nuevo usuario en la base de datos
-            $result = UserModel::createUser($nombre, $email, $hashedPassword, $rol);
-
-            if ($result) {
-                Response::redirect('login');
             } else {
-                $error = "Error al registrar el usuario. Inténtalo de nuevo.";
-                $head = SiteController::head();
-                $header = SiteController::header();
-                $footer = SiteController::footer();
-                Response::render($this->viewDir(__NAMESPACE__), "register", [
-                    "title" => 'Registro',
-                    "head" => $head,
-                    "header" => $header,
-                    "footer" => $footer,
-                    "error" => $error,
-                ]);
+                // Verifica si el usuario ya existe
+                $existingUser = UserModel::findEmail($email);
+                if ($existingUser) {
+                    $error = "El email ya está registrado.";
+                } else {
+                    // Hashear la contraseña
+                    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+                    // Guarda el nuevo usuario en la base de datos
+                    $result = UserModel::createUser($nombre, $email, $hashedPassword, $rol);
+
+                    if ($result) {
+                        Response::redirect('login');
+                        return;
+                    } else {
+                        $error = "Error al registrar el usuario. Inténtalo de nuevo.";
+                    }
+                }
             }
-        } else {
+
+            // Renderizar la vista de registro con el error
             $head = SiteController::head();
             $header = SiteController::header();
             $footer = SiteController::footer();
@@ -171,8 +201,21 @@ class AccountController extends Controller
                 "head" => $head,
                 "header" => $header,
                 "footer" => $footer,
+                "error" => $error,
             ]);
+            return;
         }
+
+        // Si no es un POST, solo renderizar la vista de registro sin error
+        $head = SiteController::head();
+        $header = SiteController::header();
+        $footer = SiteController::footer();
+        Response::render($this->viewDir(__NAMESPACE__), "register", [
+            "title" => 'Registro',
+            "head" => $head,
+            "header" => $header,
+            "footer" => $footer,
+        ]);
     }
 
 
@@ -186,5 +229,4 @@ class AccountController extends Controller
         // Redirigir a la página de inicio
         Response::redirect('login'); // Redirige a la página de inicio
     }
-
 }
