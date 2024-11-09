@@ -22,7 +22,7 @@
             </ul>
         </nav>
     </main>
-
+    
     <footer>
     <!--    <?= $footerDash; ?> Renderiza el pie de página, si lo tienes -->
     </footer>

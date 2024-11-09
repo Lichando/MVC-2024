@@ -19,8 +19,8 @@ class AccountController extends Controller
         // Si el usuario ya está autenticado, redirigir según el rol
         if (SessionController::isLoggedIn()) {
             // Verificamos el rol para redirigir al dashboard correspondiente
-            $role = SessionController::getUserRole();
-            if ($role == 1 || $role == 2) { // Administrador o Empleado
+            $rol = SessionController::getUserRole();
+            if ($rol == 1 || $rol == 2) { // Administrador o Empleado
                 Response::redirect('admin-dashboard'); // Redirigir al dashboard administrativo
             } else {
                 Response::redirect('dashboard'); // Redirigir al dashboard de usuarios inmobiliarios
@@ -136,14 +136,16 @@ class AccountController extends Controller
     }
     public function actionAdminDashboard()
     {
-        // Comprobar si el usuario es administrador o empleado
+        // Comprobar si el usuario está autenticado y tiene un rol válido (1 = Admin, 2 = Empleado)
         if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
-            Response::redirect('login'); // Redirigir al login si no está autorizado
+            error_log('Usuario no autenticado o no tiene permiso de admin/empleado');
+            Response::redirect('login'); // Redirige al login si no está autorizado
             return;
         }
     
         // Obtener el rol del usuario
         $userRole = SessionController::getUserRole();
+        error_log('Rol del usuario: ' . $userRole); // Verifica el rol del usuario
     
         // Renderizar la vista del Admin Dashboard
         $head = SiteController::head();
@@ -152,9 +154,10 @@ class AccountController extends Controller
             "title" => 'Admin Dashboard',
             "head" => $head,
             "header" => $header,
-            // Aquí puedes agregar más variables de contenido específicas para la administración
+            // Puedes agregar más variables de contenido para la vista aquí
         ]);
     }
+    
         
 
     public function actionRegister()

@@ -9,20 +9,20 @@ use PDOException;
 class UserModel extends Model
 {
     protected $table = "usuarios";
-    protected $primaryKey = "idPrimaria";
-    protected $secundaryKey = "emailÍndice";  // Cambié 'email' por 'emailÍndice' según tu esquema
-    public $idPrimaria;
+    protected $primaryKey = "id";
+    protected $secundaryKey = "email";  
+    public $id;
     public $nombre;
-    public $emailÍndice;
+    public $email;
     public $contrasena;
     public $fecha_registro;
     public $activo;
-    public $rolÍndice;
+    public $rol;
 
     // Método para autenticar al usuario por email y contraseña
     public static function authenticate($email, $password)
     {
-        $sql = "SELECT * FROM usuarios WHERE emailÍndice = :email LIMIT 1";
+        $sql = "SELECT * FROM usuarios WHERE email = :email LIMIT 1";
         $users = DataBase::getRecords($sql, ['email' => $email]);
 
         if (!empty($users)) {
@@ -39,7 +39,7 @@ class UserModel extends Model
     // Método para buscar un usuario por su email
     public static function findEmail($email)
     {
-        $sql = "SELECT * FROM usuarios WHERE emailÍndice = :email";
+        $sql = "SELECT * FROM usuarios WHERE email = :email";
         $params = ['email' => $email];
         return DataBase::getRecords($sql, $params);
     }
@@ -47,7 +47,7 @@ class UserModel extends Model
     // Método para crear un nuevo usuario
     public static function createUser($nombre, $email, $hashedPassword, $rol = 4)
     {
-        $sql = "INSERT INTO usuarios (nombre, emailÍndice, contrasena, rolÍndice, fecha_registro, activo) 
+        $sql = "INSERT INTO usuarios (nombre, email, contrasena, rol, fecha_registro, activo) 
                 VALUES (:nombre, :email, :contrasena, :rol, CURRENT_TIMESTAMP, 1)";
         
         $params = [
@@ -86,11 +86,11 @@ class UserModel extends Model
     {
         $sql = "UPDATE usuarios
                 SET nombre = :nombre,
-                    emailÍndice = :email,
+                    email = :email,
                     contrasena = :contrasena,
-                    rolÍndice = :rol,
+                    rol = :rol,
                     activo = :activo
-                WHERE idPrimaria = :id";
+                WHERE id = :id";
 
         $data['id'] = $id; // Añadimos el ID a los parámetros
         return DataBase::execute($sql, $data);

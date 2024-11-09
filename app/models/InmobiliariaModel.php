@@ -1,7 +1,5 @@
 <?php
 
-<?php
-
 namespace app\models;
 
 use \DataBase;
@@ -13,7 +11,7 @@ class InmobiliariaModel extends Model
 {
     // Este modelo ahora usará la conexión gestionada por la clase base Model
     protected $table = "inmobiliarias";
-    protected $primaryKey = "idPrimaria";
+    protected $primaryKey = "id";
 
     // Método para obtener todas las inmobiliarias
     public static function getAllInmobiliarias()
@@ -25,22 +23,22 @@ class InmobiliariaModel extends Model
     // Método para obtener una inmobiliaria por su ID
     public static function getInmobiliariaById($id)
     {
-        $sql = "SELECT * FROM inmobiliarias WHERE idPrimaria = :id";
+        $sql = "SELECT * FROM inmobiliarias WHERE id = :id";
         return DataBase::getRecords($sql, ['id' => $id]);
     }
 
     // Método para obtener el ID de la inmobiliaria por el ID del dueño
     public static function getInmobiliariaIdByOwner($ownerId)
     {
-        $sql = "SELECT idPrimaria FROM inmobiliarias WHERE dueñoInmobiliariaÍndice = :ownerId";
+        $sql = "SELECT id FROM inmobiliarias WHERE dueñoInmobiliaria = :ownerId";
         return DataBase::getRecords($sql, ['ownerId' => $ownerId]);
     }
 
     // Método para crear una inmobiliaria
     public static function create($data)
     {
-        $sql = "INSERT INTO inmobiliarias (nombre, dueñoInmobiliariaÍndice, matriculaÍndice, direccion, telefono, emailÍndice, fecha_creacion, activo)
-                VALUES (:nombre, :dueñoInmobiliariaÍndice, :matriculaÍndice, :direccion, :telefono, :emailÍndice, :fecha_creacion, :activo)";
+        $sql = "INSERT INTO inmobiliarias (nombre, dueñoInmobiliaria, matricula, direccion, telefono, email, fecha_creacion, activo)
+                VALUES (:nombre, :dueñoInmobiliaria, :matricula, :direccion, :telefono, :email, :fecha_creacion, :activo)";
         return DataBase::execute($sql, $data); // Ejecuta la consulta de inserción
     }
 
@@ -49,14 +47,14 @@ class InmobiliariaModel extends Model
     {
         $sql = "UPDATE inmobiliarias
                 SET nombre = :nombre, 
-                    dueñoInmobiliariaÍndice = :dueñoInmobiliariaÍndice, 
-                    matriculaÍndice = :matriculaÍndice,
+                    dueñoInmobiliaria = :dueñoInmobiliaria, 
+                    matricula = :matricula,
                     direccion = :direccion,
                     telefono = :telefono,
-                    emailÍndice = :emailÍndice,
+                    email = :email,
                     fecha_creacion = :fecha_creacion,
                     activo = :activo
-                WHERE idPrimaria = :id";
+                WHERE id = :id";
         $data['id'] = $id;
         return DataBase::execute($sql, $data); // Ejecuta la consulta de actualización
     }
@@ -64,7 +62,7 @@ class InmobiliariaModel extends Model
     // Método para eliminar una inmobiliaria (físicamente) - No se usa, se utiliza la baja lógica
     public static function delete($id)
     {
-        $sql = "DELETE FROM inmobiliarias WHERE idPrimaria = :id";
+        $sql = "DELETE FROM inmobiliarias WHERE id = :id";
         return DataBase::execute($sql, ['id' => $id]); // Elimina la inmobiliaria de la base de datos
     }
 
@@ -72,7 +70,7 @@ class InmobiliariaModel extends Model
     public static function bajaInmobiliaria($id)
     {
         // Cambiar el estado de la inmobiliaria a "inactiva" (activo = 0)
-        $sql = "UPDATE inmobiliarias SET activo = 0 WHERE idPrimaria = :id";
+        $sql = "UPDATE inmobiliarias SET activo = 0 WHERE id = :id";
         return DataBase::execute($sql, ['id' => $id]);
     }
 
@@ -80,24 +78,24 @@ class InmobiliariaModel extends Model
     public static function activarInmobiliaria($id)
     {
         // Cambiar el estado a "activo" (activo = 1)
-        $sql = "UPDATE inmobiliarias SET activo = 1 WHERE idPrimaria = :id";
+        $sql = "UPDATE inmobiliarias SET activo = 1 WHERE id= :id";
         return DataBase::execute($sql, ['id' => $id]);
     }
 
     // Método de validación de propiedad: Verificar que el usuario es el dueño de la inmobiliaria
     public static function validateOwnership($inmobiliariaId, $userId)
     {
-        $sql = "SELECT 1 FROM inmobiliarias WHERE idPrimaria = :inmobiliariaId AND dueñoInmobiliariaÍndice = :userId";
+        $sql = "SELECT 1 FROM inmobiliarias WHERE id= :id AND dueñoInmobiliaria = :userId";
         $result = DataBase::getRecords($sql, ['inmobiliariaId' => $inmobiliariaId, 'userId' => $userId]);
 
         return !empty($result); // Devuelve true si existe la relación, false si no
     }
 
     // Método para asignar un rol (de corredor o agente) a un usuario
-    public static function asignarRol($inmobiliariaId, $userEmail, $role)
+    public static function asignarRol($inmobiliariaId, $userEmail, $rol)
     {
         // Verificar si el rol es válido
-        if (!in_array($role, [4, 5])) { // Solo puede asignar rol 4 o 5 (corredor y agente)
+        if (!in_array($rol, [4, 5])) { // Solo puede asignar rol 4 o 5 (corredor y agente)
             throw new Exception("Rol no válido.");
         }
 
@@ -113,11 +111,11 @@ class InmobiliariaModel extends Model
 
         // Actualizar el rol del usuario
         $sql = "UPDATE usuarios SET rol = :role WHERE id = :userId";
-        return DataBase::execute($sql, ['role' => $role, 'userId' => $userId]);
+        return DataBase::execute($sql, ['role' => $rol, 'userId' => $userId]);
     }
 
     // Método para asignar rol de Corredor o Agente a un usuario
-    public static function asignarCorredorOAgente($inmobiliariaId, $userEmail, $role)
+    public static function asignarCorredorOAgente($inmobiliariaId, $userEmail, $rol)
     {
         // Verificar que el dueño de la inmobiliaria está realizando la acción
         if (!self::validateOwnership($inmobiliariaId, SessionController::getUserId())) {
@@ -125,12 +123,12 @@ class InmobiliariaModel extends Model
         }
 
         // Verificar que el rol es válido (corredorInmobiliario o agenteInmobiliario)
-        if (!in_array($role, [4, 5])) {
+        if (!in_array($rol, [4, 5])) {
             throw new Exception("Rol no válido.");
         }
 
         // Asignar el rol al usuario
-        return self::asignarRol($inmobiliariaId, $userEmail, $role);
+        return self::asignarRol($inmobiliariaId, $userEmail, $rol);
     }
 
     // Método para obtener los corredores y agentes asociados a una inmobiliaria
@@ -138,8 +136,7 @@ class InmobiliariaModel extends Model
     {
         $sql = "SELECT u.id, u.email, u.rol
                 FROM usuarios u
-                INNER JOIN inmobiliarias i ON u.id = i.dueñoInmobiliariaÍndice
-                WHERE i.idPrimaria = :inmobiliariaId AND u.rol IN (4, 5)";
+                INNER JOIN inmobiliarias i ON u.id = i.dueñoInmobiliaria WHERE i.id = :inmobiliariaId AND u.rol IN (4, 5)";
         return DataBase::getRecords($sql, ['inmobiliariaId' => $inmobiliariaId]);
     }
 
