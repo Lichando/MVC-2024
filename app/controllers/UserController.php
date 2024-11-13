@@ -18,7 +18,7 @@ class UserController extends Controller
 	public static function GetUser($emailOrId){
 		if (filter_var($emailOrId, FILTER_VALIDATE_EMAIL)) {
 			# obtener datos de usuario por Email
-			$userData = UserModel::findEmail($emailOrId);
+			$userData = UserModel::BuscarEmail($emailOrId);
 			// var_dump($userData);
 		}else{
 			# obtener datos de usuario por Id
@@ -39,19 +39,19 @@ class UserController extends Controller
 
 	/*Validad si el e-mail asociado a un Usuario se encuentra en estado Activo*/
 	public static function checkActivo($userEmail){
-		$datosUsuario = UserModel::findEmail($userEmail);
+		$datosUsuario = UserModel::BuscarEmail($userEmail);
 		// var_dump($datosUsuario);
 		if ($datosUsuario) {
 			if ($datosUsuario->activo == 'si') {
-				$result =  true;
+				$resultado =  true;
 			}else{
-				// $result = 'El Usuario no se encuentra activo!';
-				$result = 'Problemas al acceder a la cuenta! <br>(UC-#42)';
+				// $resultado = 'El Usuario no se encuentra activo!';
+				$resultado = 'Problemas al acceder a la cuenta! <br>(UC-#42)';
 			}
 		}else{
-			$result = false;
+			$resultado = false;
 		}
-		return $result;
+		return $resultado;
 	}
 
 

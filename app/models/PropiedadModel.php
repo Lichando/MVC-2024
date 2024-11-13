@@ -30,9 +30,9 @@ class PropiedadModel  extends Model
                   LEFT JOIN inmobiliarias inm ON inm.id = p.id_inm 
                   WHERE p.id = :id LIMIT 1"; // LIMIT 1 para asegurarse de que solo se devuelve un resultado
 
-        $result = Database::getRecords($query, ['id' => $id]);
+        $resultado = Database::getRecords($query, ['id' => $id]);
 
-        return !empty($result) ? $result[0] : null; // Si no se encuentra la propiedad, devuelve null
+        return !empty($resultado) ? $resultado[0] : null; // Si no se encuentra la propiedad, devuelve null
     }
 
     // Método para crear una nueva propiedad
@@ -92,11 +92,11 @@ class PropiedadModel  extends Model
 
         try {
             // Ejecutamos la consulta con el parámetro user_id
-            $result = Database::getRecords($query, ['user_id' => $userId]);
+            $resultado = Database::getRecords($query, ['user_id' => $userId]);
 
             // Si encontramos un resultado, retornamos el ID de la inmobiliaria
-            if (!empty($result)) {
-                return $result[0]['id'];  // Devuelve el id de la inmobiliaria
+            if (!empty($resultado)) {
+                return $resultado[0]['id'];  // Devuelve el id de la inmobiliaria
             } else {
                 return null;  // Si no hay resultado, retorna null
             }

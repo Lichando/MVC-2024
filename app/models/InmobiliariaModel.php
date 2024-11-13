@@ -86,9 +86,9 @@ class InmobiliariaModel extends Model
     public static function validateOwnership($inmobiliariaId, $userId)
     {
         $sql = "SELECT 1 FROM inmobiliarias WHERE id= :id AND dueñoInmobiliaria = :userId";
-        $result = DataBase::getRecords($sql, ['inmobiliariaId' => $inmobiliariaId, 'userId' => $userId]);
+        $resultado = DataBase::getRecords($sql, ['inmobiliariaId' => $inmobiliariaId, 'userId' => $userId]);
 
-        return !empty($result); // Devuelve true si existe la relación, false si no
+        return !empty($resultado); // Devuelve true si existe la relación, false si no
     }
 
     // Método para asignar un rol (de corredor o agente) a un usuario

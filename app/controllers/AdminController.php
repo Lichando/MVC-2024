@@ -11,11 +11,14 @@ use app\models\EstadisticaModel; // Modelo para obtener estadísticas
 
 class AdminController extends Controller
 {
+
+
+
     // Mostrar listado de todas las inmobiliarias
     public function actionInmobiliarias()
     {
         // Verificar que el usuario tiene permiso
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
             Response::redirect('login'); // Redirigir si no tiene permisos
             return;
         }
@@ -33,11 +36,12 @@ class AdminController extends Controller
         ]);
     }
 
+
     // Eliminar una inmobiliaria
     public function actionEliminarInmobiliaria($id)
     {
         // Verificar que el usuario tiene permiso
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
             Response::redirect('login');
             return;
         }
@@ -52,7 +56,7 @@ class AdminController extends Controller
     // Mostrar listado de todas las propiedades
     public function actionPropiedades()
     {
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
             Response::redirect('login');
             return;
         }
@@ -73,7 +77,7 @@ class AdminController extends Controller
     // Eliminar una propiedad
     public function actionEliminarPropiedad($id)
     {
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
             Response::redirect('login');
             return;
         }
@@ -88,7 +92,7 @@ class AdminController extends Controller
     // Mostrar listado de todos los usuarios
     public function actionUsuarios()
     {
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
             Response::redirect('login');
             return;
         }
@@ -109,7 +113,7 @@ class AdminController extends Controller
     // Eliminar un usuario
     public function actionEliminarUsuario($id)
     {
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
             Response::redirect('login');
             return;
         }
@@ -124,7 +128,7 @@ class AdminController extends Controller
     // Mostrar listado de corredores y agentes
     public function actionCorredoresAgentes()
     {
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
             Response::redirect('login');
             return;
         }
@@ -145,21 +149,30 @@ class AdminController extends Controller
     // Mostrar estadísticas de ventas por inmobiliaria
     public function actionEstadisticas()
     {
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
             Response::redirect('login');
             return;
         }
 
-        // Obtener las estadísticas
-        $estadisticas = EstadisticaModel::getAllStatistics();
+        // Obtener el ranking de inmobiliarias por propiedades vendidas
+        $topInmobiliarias = EstadisticaModel::getTopInmobiliariasPorVentas();
+        // Obtener el ranking de propiedades más vistas
+        $topPropiedades = EstadisticaModel::getTopPropiedadesPorVistas();
+        // Obtener el ranking de vendedores más consultados para una inmobiliaria específica
+        $topVendedores = EstadisticaModel::getTopVendedoresPorConsultas($inmobiliariaId);  // Usa un ID de inmobiliaria
+        // Obtener el ranking de inmobiliarias por puntuación
+        $topInmobiliariasPorPuntuacion = EstadisticaModel::getTopInmobiliariasPorPuntuacion();
 
         $head = SiteController::head();
         $header = SiteController::header();
         Response::render($this->viewDir(__NAMESPACE__), "estadisticas", [
-            "title" => 'Estadísticas de Ventas',
+            "title" => 'Estadísticas y Rankings',
             "head" => $head,
             "header" => $header,
-            "estadisticas" => $estadisticas
+            "topInmobiliarias" => $topInmobiliarias,
+            "topPropiedades" => $topPropiedades,
+            "topVendedores" => $topVendedores,
+            "topInmobiliariasPorPuntuacion" => $topInmobiliariasPorPuntuacion
         ]);
     }
 }

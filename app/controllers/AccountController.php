@@ -8,27 +8,46 @@ use app\models\UserModel;
 
 class AccountController extends Controller
 {
-    // Constructor
-    public function __construct()
+    // Función para redirigir según el rol del usuario
+    private function redirectByRole($rol)
     {
-        // Aquí puedes inicializar variables o realizar acciones necesarias
+        if ($rol == 1 || $rol == 2) {
+            Response::redirect('admin-dashboard'); // Redirigir al dashboard administrativo
+        } else {
+            Response::redirect('dashboard'); // Redirigir al dashboard de usuarios inmobiliarios
+        }
     }
 
+    // Función para verificar si el usuario está logueado y si tiene un rol válido
+    private function verificarAutenticacionYRol($rolesPermitidos)
+    {
+        if (!SessionController::EstaLogeado()) {
+            Response::redirect('login');
+            return false;
+        }
+
+        $rol = SessionController::ObtenerRol();
+        if (!in_array($rol, $rolesPermitidos)) {
+            Response::redirect('login');
+            return false;
+        }
+
+        return $rol; // Si la autenticación es correcta, retorna el rol
+    }
+
+    // Acción para el login
     public function actionLogin()
     {
         // Si el usuario ya está autenticado, redirigir según el rol
-        if (SessionController::isLoggedIn()) {
-            // Verificamos el rol para redirigir al dashboard correspondiente
-            $rol = SessionController::getUserRole();
-            if ($rol == 1 || $rol == 2) { // Administrador o Empleado
-                Response::redirect('admin-dashboard'); // Redirigir al dashboard administrativo
-            } else {
-                Response::redirect('dashboard'); // Redirigir al dashboard de usuarios inmobiliarios
-            }
+        if (SessionController::EstaLogeado()) {
+            $rol = SessionController::ObtenerRol();
+            $this->redirectByRole($rol); // Redirige según el rol
             return;
         }
 
         // Procesar el formulario solo si es una solicitud POST
+        $error = null; // Inicializamos la variable de error
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
@@ -44,35 +63,18 @@ class AccountController extends Controller
 
                 if ($user) {
                     // Almacenar en sesión
-                    SessionController::login($user->id, $user->rol);
+                    SessionController::login($user->id,$user->rol, $user->nombre);
 
                     // Redirigir según el rol
-                    if ($user->rol == 1 || $user->rol == 2) {
-                        Response::redirect('admin-dashboard'); // Redirigir al dashboard de administración
-                    } else {
-                        Response::redirect('dashboard'); // Redirigir al dashboard de inmobiliarios
-                    }
+                    $this->redirectByRole($user->rol);
                     return;
                 } else {
                     $error = "Email o contraseña incorrectos.";
                 }
             }
-
-            // Renderizar la vista de login con el error
-            $head = SiteController::head();
-            $header = SiteController::header();
-            $footer = SiteController::footer();
-            Response::render($this->viewDir(__NAMESPACE__), "login", [
-                "title" => 'Iniciar Sesión',
-                "head" => $head,
-                "header" => $header,
-                "footer" => $footer,
-                "error" => $error,
-            ]);
-            return;
         }
 
-        // Si no es un POST, solo renderizar la vista de login sin error
+        // Renderizar la vista de login (con o sin error)
         $head = SiteController::head();
         $header = SiteController::header();
         $footer = SiteController::footer();
@@ -81,38 +83,40 @@ class AccountController extends Controller
             "head" => $head,
             "header" => $header,
             "footer" => $footer,
+            "error" => $error,
         ]);
     }
+
+    // Acción para el dashboard del usuario
     public function actionDashboard()
     {
-        // Comprobar si el usuario está autenticado
-        if (!SessionController::isLoggedIn()) {
-            Response::redirect('login'); // Redirigir al login si no está autenticado
-            return;
-        }
-    
-        // Obtener el rol del usuario
-        $userRole = SessionController::getUserRole();
-    
+        // Verificar la autenticación y rol del usuario
+        $rolUsuario = $this->verificarAutenticacionYRol([1, 2, 3, 4, 5, 6]);
+        if (!$rolUsuario) return; // Si no está autenticado o tiene un rol inválido, se redirige
+        // Obtener el nombre de usuario desde la sesión
+         // Obtener el nombre de usuario desde la sesión
+        $userName = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Invitado';
+
+
         // Variables que controlan las secciones del dashboard
-        $showPropertyManagement = false;
-        $showCommercialOptions = false;
-        $showAdminOptions = false;
-    
+        $MostrarGestorPropiedades = false;
+        $MostrarOpcionesComerciales = false;
+        $MostrarOpcionesAdmin = false;
+
         // Definir permisos según el rol del usuario
-        switch ($userRole) {
+        switch ($rolUsuario) {
             case 1: // Administrador
             case 2: // Empleado
-                $showAdminOptions = true; // El administrador/empleado verá opciones administrativas
+                $MostrarOpcionesAdmin = true; // El administrador/empleado verá opciones administrativas
                 break;
             case 3: // Administrador Inmobiliaria
-                $showPropertyManagement = true; // El administrador inmobiliario gestiona propiedades
+                $MostrarGestorPropiedades = true; // El administrador inmobiliario gestiona propiedades
                 break;
             case 4: // Corredor Inmobiliario
-                $showPropertyManagement = true; // El corredor inmobiliario gestiona propiedades
+                $MostrarGestorPropiedades = true; // El corredor inmobiliario gestiona propiedades
                 break;
             case 5: // Agente Inmobiliario
-                $showCommercialOptions = true; // El agente tiene acceso comercial
+                $MostrarOpcionesComerciales = true; // El agente tiene acceso comercial
                 break;
             case 6: // Cliente
                 // El cliente solo verá opciones de búsqueda de propiedades
@@ -121,44 +125,39 @@ class AccountController extends Controller
                 Response::redirect('login'); // En caso de un rol no reconocido, redirigir a login
                 return;
         }
-    
+
         // Renderizar la vista del Dashboard
         $head = SiteController::head();
         $header = SiteController::header();
+        $footer = SiteController::footer();
         Response::render($this->viewDir(__NAMESPACE__), "dashboard", [
             "title" => 'Dashboard',
             "head" => $head,
             "header" => $header,
-            "showPropertyManagement" => $showPropertyManagement,
-            "showCommercialOptions" => $showCommercialOptions,
-            "showAdminOptions" => $showAdminOptions,
+            "footer" => $footer,
+            "userName" => $userName,
+            "MostrarGestorPropiedades" => $MostrarGestorPropiedades,
+            "MostrarOpcionesComerciales" => $MostrarOpcionesComerciales,
+            "MostrarOpcionesAdmin" => $MostrarOpcionesAdmin,
         ]);
     }
+
+    // Acción para el dashboard de administración
     public function actionAdminDashboard()
     {
-        // Comprobar si el usuario está autenticado y tiene un rol válido (1 = Admin, 2 = Empleado)
-        if (!SessionController::isLoggedIn() || !in_array(SessionController::getUserRole(), [1, 2])) {
-            error_log('Usuario no autenticado o no tiene permiso de admin/empleado');
-            Response::redirect('login'); // Redirige al login si no está autorizado
-            return;
-        }
-    
-        // Obtener el rol del usuario
-        $userRole = SessionController::getUserRole();
-        error_log('Rol del usuario: ' . $userRole); // Verifica el rol del usuario
-    
+        // Verificar si el usuario está autenticado y tiene un rol válido (1 = Admin, 2 = Empleado)
+        $rolUsuario = $this->verificarAutenticacionYRol([1, 2]);
+        if (!$rolUsuario) return; // Si no está autenticado o tiene un rol inválido, se redirige
+
         // Renderizar la vista del Admin Dashboard
         $head = SiteController::head();
         $header = SiteController::header();
-        Response::render($this->viewDir(__NAMESPACE__), "admin-dashboard", [
+        Response::render($this->viewDir(__NAMESPACE__), "admindashboard", [
             "title" => 'Admin Dashboard',
             "head" => $head,
             "header" => $header,
-            // Puedes agregar más variables de contenido para la vista aquí
         ]);
     }
-    
-        
 
     public function actionRegister()
     {
@@ -167,7 +166,7 @@ class AccountController extends Controller
             $nombre = $_POST['nombre'] ?? '';
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
-            $rol = 4; // Rol predeterminado (Visitante)
+            $rol = 4;
 
             // Validación de entrada
             if (empty($nombre) || empty($email) || empty($password)) {
@@ -176,17 +175,17 @@ class AccountController extends Controller
                 $error = "El email proporcionado no es válido.";
             } else {
                 // Verifica si el usuario ya existe
-                $existingUser = UserModel::findEmail($email);
-                if ($existingUser) {
+                $existeUser = UserModel::BuscarEmail($email);
+                if ($existeUser) {
                     $error = "El email ya está registrado.";
                 } else {
                     // Hashear la contraseña
                     $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
                     // Guarda el nuevo usuario en la base de datos
-                    $result = UserModel::createUser($nombre, $email, $hashedPassword, $rol);
+                    $resultado = UserModel::CrearUsuario($nombre, $email, $hashedPassword, $rol);
 
-                    if ($result) {
+                    if ($resultado) {
                         Response::redirect('login');
                         return;
                     } else {

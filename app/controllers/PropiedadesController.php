@@ -43,7 +43,7 @@ class PropiedadesController extends Controller
 
     // Método para agregar una nueva propiedad (solo permitido para corredores y dueños)
     public function actionAgregar() {
-        if (!SessionController::isAuthenticated() || !in_array(SessionController::getUserRole(), [3, 5])) {
+        if (!SessionController::isAuthenticated() || !in_array(SessionController::ObtenerRol(), [3, 5])) {
             Response::redirect('/account/login'); 
         }
 
@@ -58,7 +58,7 @@ class PropiedadesController extends Controller
 
     // Método para manejar el guardado de una nueva propiedad
     public function actionManejarAgregar() {
-        if (!SessionController::isAuthenticated() || !in_array(SessionController::getUserRole(), [3, 5])) {
+        if (!SessionController::isAuthenticated() || !in_array(SessionController::ObtenerRol(), [3, 5])) {
             Response::redirect('/account/login');
         }
 
@@ -79,7 +79,7 @@ class PropiedadesController extends Controller
 
     // Método para editar una propiedad existente (solo permitido para corredores, agentes y dueños)
     public function actionEditar($id) {
-        if (!SessionController::isAuthenticated() || !in_array(SessionController::getUserRole(), [3, 4, 5])) {
+        if (!SessionController::isAuthenticated() || !in_array(SessionController::ObtenerRol(), [3, 4, 5])) {
             Response::redirect('/account/login'); 
         }
 
@@ -93,7 +93,7 @@ class PropiedadesController extends Controller
         $inmobiliariaId = InmobiliariaModel::getInmobiliariaIdByUserId($userId);
 
         // Si el usuario es dueño, verificar que la propiedad pertenezca a su inmobiliaria
-        if (SessionController::getUserRole() === 5 && $propiedad->dueñoInmobiliariaÍndice != $inmobiliariaId) {
+        if (SessionController::ObtenerRol() === 5 && $propiedad->dueñoInmobiliariaÍndice != $inmobiliariaId) {
             Response::redirect('/propiedad/listar');
         }
 
@@ -109,7 +109,7 @@ class PropiedadesController extends Controller
 
     // Método para manejar la actualización de una propiedad
     public function actionManejarEditar($id) {
-        if (!SessionController::isAuthenticated() || !in_array(SessionController::getUserRole(), [3, 4, 5])) {
+        if (!SessionController::isAuthenticated() || !in_array(SessionController::ObtenerRol(), [3, 4, 5])) {
             Response::redirect('/account/login'); 
         }
 
@@ -132,7 +132,7 @@ class PropiedadesController extends Controller
     // Método para dar de baja (inactivar) una propiedad (solo permitido para administradores, empleados y dueños)
     public function actionBaja($id) {
         // Verificar que el usuario tiene permiso
-        if (!SessionController::isAuthenticated() || !in_array(SessionController::getUserRole(), [1, 2, 5])) {
+        if (!SessionController::isAuthenticated() || !in_array(SessionController::ObtenerRol(), [1, 2, 5])) {
             Response::redirect('/account/login');
         }
 
@@ -143,7 +143,7 @@ class PropiedadesController extends Controller
         }
 
         // Si es dueño, asegurarse de que la propiedad pertenece a su inmobiliaria
-        if (SessionController::getUserRole() === 5 && $propiedad->dueñoInmobiliariaÍndice != InmobiliariaModel::getInmobiliariaIdByUserId(SessionController::getUserId())) {
+        if (SessionController::ObtenerRol() === 5 && $propiedad->dueñoInmobiliariaÍndice != InmobiliariaModel::getInmobiliariaIdByUserId(SessionController::getUserId())) {
             Response::redirect('/propiedad/listar');
         }
 

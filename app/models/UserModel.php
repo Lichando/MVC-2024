@@ -37,7 +37,7 @@ class UserModel extends Model
     }
 
     // Método para buscar un usuario por su email
-    public static function findEmail($email)
+    public static function BuscarEmail($email)
     {
         $sql = "SELECT * FROM usuarios WHERE email = :email";
         $params = ['email' => $email];
@@ -45,7 +45,7 @@ class UserModel extends Model
     }
 
     // Método para crear un nuevo usuario
-    public static function createUser($nombre, $email, $hashedPassword, $rol = 4)
+    public static function CrearUsuario($nombre, $email, $hashedPassword, $rol = 4)
     {
         $sql = "INSERT INTO usuarios (nombre, email, contrasena, rol, fecha_registro, activo) 
                 VALUES (:nombre, :email, :contrasena, :rol, CURRENT_TIMESTAMP, 1)";
