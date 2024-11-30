@@ -90,7 +90,7 @@ CREATE TABLE `imagenes` (
 CREATE TABLE `inmobiliarias` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `dueñoInmobiliaria` int(11) NOT NULL,
+  `duenioInmobiliaria` int(11) NOT NULL,
   `matricula` varchar(100) NOT NULL,
   `direccion` varchar(255) NOT NULL,
   `telefono` varchar(20) DEFAULT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE `inmobiliarias` (
 -- Volcado de datos para la tabla `inmobiliarias`
 --
 
-INSERT INTO `inmobiliarias` (`id`, `nombre`, `dueñoInmobiliaria`, `matricula`, `direccion`, `telefono`, `email`, `fecha_creacion`, `activo`) VALUES
+INSERT INTO `inmobiliarias` (`id`, `nombre`, `duenioInmobiliaria`, `matricula`, `direccion`, `telefono`, `email`, `fecha_creacion`, `activo`) VALUES
 (1, 'Prueba Inmobiliaria', 1, '', 'Provincias Unidas 3251', '3415802283', 'contacto@pruebainmobiliaria.com', '2024-10-31', 1);
 
 -- --------------------------------------------------------
@@ -144,7 +144,7 @@ CREATE TABLE `rol` (
 INSERT INTO `rol` (`id`, `nombre`, `descripcion`) VALUES
 (1, 'administrador', '\"Tiene el control total de todo el sistema\"'),
 (2, 'empleado', '\"Tiene acceso limitado exclusivamente para administrar estadísticas y dar soporte al cliente\"'),
-(3, 'administradorInmobiliaria', '\"Es un rango que se otorga al dueño de una inmobiliaria con el fin de gestionar la misma\"'),
+(3, 'administradorInmobiliaria', '\"Es un rango que se otorga al duenio de una inmobiliaria con el fin de gestionar la misma\"'),
 (4, 'corredorInmobiliario', '\"Es un rango que se asigna a un corredor inmobiliario que pertenece a una determinada inmobiliaria para que pueda hacer ABM de propiedades\" '),
 (5, 'agenteInmobiliario', '\"Es un rol que permite un modo mas comercial de gestion la transaccion, este mismo solo puede realizar carga de propiedades\"'),
 (6, 'cliente', '\"Es un rol que permite gestionar entre un usuario interesado en el mercado inmobiliario y alguna inmobiliaria\"');
@@ -235,7 +235,7 @@ ALTER TABLE `inmobiliarias`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `matricula` (`matricula`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `id_dueño` (`dueñoInmobiliaria`);
+  ADD KEY `id_duenio` (`duenioInmobiliaria`);
 
 --
 -- Indices de la tabla `propiedades`
@@ -352,7 +352,7 @@ ALTER TABLE `visitas_propiedades`
 -- Filtros para la tabla `inmobiliarias`
 --
 ALTER TABLE `inmobiliarias`
-  ADD CONSTRAINT `id_dueño` FOREIGN KEY (`dueñoInmobiliaria`) REFERENCES `usuarios` (`id`);
+  ADD CONSTRAINT `id_duenio` FOREIGN KEY (`duenioInmobiliaria`) REFERENCES `usuarios` (`id`);
 
 --
 -- Filtros para la tabla `propiedades`

@@ -129,39 +129,51 @@
             <aside class="dashboard-sidebar">
                 <h3>Opciones</h3>
                 <ul>
-                    <li><a href="dashboard">Ver Propiedades</a></li>
-                    <li><a href="cargar-propiedad">Cargar Propiedad</a></li>
-                    <li><a href="consultas">Consultas</a></li>
-                    <li><a href="logout">Cerrar Sesión</a></li>
+                    <li><a href="../inmobiliaria/propiedades">Ver Propiedades</a></li>
+                    <!-- Redirecciona al dashboard -->
+                    <li><a href="../inmobiliaria/cargar">Cargar Propiedad</a></li>
+                    <!-- Redirecciona a cargar propiedad -->
+                    <li><a href="logout">Cerrar Sesión</a></li> <!-- Redirecciona a cerrar sesión -->
                 </ul>
             </aside>
 
             <!-- Contenido principal del dashboard -->
             <section class="dashboard-main">
-                <!-- Dentro de dashboard.php -->
                 <div class="welcome-message">
-                    <p>Bienvenido, <strong><?= htmlspecialchars($userName); ?></strong></p>
+                    <?php if (isset($_SESSION['inmobiliaria_id'])): ?>
+                        <p>Bienvenido, <?= htmlspecialchars($userName) ?></p>
+                        <p>Inmobiliaria: <?= htmlspecialchars($inmobiliariaNombre) ?></p>
+
+
+                    <?php else: ?>
+                        <p>No se ha encontrado la inmobiliaria.</p>
+                    <?php endif; ?>
+
+                    
+
                 </div>
+            </section>
 
 
-                <h2>Propiedades Cargadas</h2>
+            <h2>Propiedades Cargadas</h2>
 
-                <?php if (!empty($properties)): ?>
-                    <div class="property-list">
-                        <?php foreach ($properties as $property): ?>
-                            <div class="property-item">
-                                <img src="images/<?= $property['imagen']; ?>" alt="<?= $property['titulo']; ?>" class="property-image">
-                                <h3><?= htmlspecialchars($property['titulo']); ?></h3>
-                                <p><strong>Ubicación:</strong> <?= htmlspecialchars($property['ubicacion']); ?></p>
-                                <p><strong>Precio:</strong> <?= htmlspecialchars($property['precio']); ?></p>
-                                <p><strong>Descripción:</strong> <?= htmlspecialchars($property['descripcion']); ?></p>
-                                <a href="detalle.php?id=<?= urlencode($property['titulo']); ?>" class="btn">Ver más</a>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else: ?>
-                    <p>No hay propiedades cargadas en este momento.</p>
-                <?php endif; ?>
+            <?php if (!empty($properties)): ?>
+                <div class="property-list">
+                    <?php foreach ($properties as $property): ?>
+                        <div class="property-item">
+                            <img src="images/<?= $property['imagen']; ?>" alt="<?= $property['titulo']; ?>"
+                                class="property-image">
+                            <h3><?= htmlspecialchars($property['titulo']); ?></h3>
+                            <p><strong>Ubicación:</strong> <?= htmlspecialchars($property['ubicacion']); ?></p>
+                            <p><strong>Precio:</strong> <?= htmlspecialchars($property['precio']); ?></p>
+                            <p><strong>Descripción:</strong> <?= htmlspecialchars($property['descripcion']); ?></p>
+                            <a href="/inmobiliaria/detalle/<?= urlencode($property['titulo']); ?>" class="btn">Ver más</a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p>No hay propiedades cargadas en este momento.</p>
+            <?php endif; ?>
             </section>
         </div>
     </main>

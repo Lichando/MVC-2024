@@ -49,7 +49,7 @@ class App
         return file_exists($path);
     }
 
-    // Obtener el nombre del controlador con el namespace adecuado
+    // get el nombre del controlador con el namespace adecuado
     protected function getControllerClass($controllerPath)
     {
         return str_replace('/', '\\', $controllerPath);
@@ -64,7 +64,7 @@ class App
         }
     }
 
-    // Obtener el método desde la URL
+    // get el método desde la URL
     protected function getMethodFromUrl(&$url)
     {
         return isset($url[1]) ? "action" . ucfirst(strtolower($url[1])) : $this->method;

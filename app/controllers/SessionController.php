@@ -3,6 +3,8 @@
 namespace app\controllers;
 
 use \Controller;
+use \Response;
+use app\models\UserModel;
 
 class SessionController extends Controller
 {
@@ -45,26 +47,35 @@ class SessionController extends Controller
         self::start(); // Asegúrate de que la sesión esté iniciada
         return isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], $roles);
     }
-    public static function login($userId, $rol, $userName)
+
+    public static function login($userId, $rol, $userName, $inmobiliariaId)
     {
         self::start(); // Asegúrate de que la sesión esté iniciada
-    
+
         // Validar los parámetros
         if (empty($userId) || !is_numeric($userId) || !in_array($rol, [1, 2, 3, 4, 5, 6]) || empty($userName)) {
             throw new \Exception('Datos de usuario, rol o nombre inválidos');
         }
-    
+
         // Guardar la información en la sesión
         $_SESSION['user_id'] = $userId;
         $_SESSION['user_role'] = $rol;
-        $_SESSION['user_name'] = $userName;  // Aquí guardamos el nombre del usuario
-    
+        $_SESSION['user_name'] = $userName;
+
+        // Obtener el nombre de la inmobiliaria desde la base de datos
+        $inmobiliariaNombre = UserModel::getInmobiliariaNombre($inmobiliariaId); 
+
+        // Guardar el nombre de la inmobiliaria en la sesión
+        $_SESSION['inmobiliaria_nombre'] = $inmobiliariaNombre;
+
+        $_SESSION['inmobiliaria_id'] = $inmobiliariaId; // Guardar el inmobiliaria_id en la sesión
+
         session_regenerate_id(true);
-    
+
         // Establecer cookie con duración más corta (por ejemplo, 1 mes)
         setcookie('user_id', $userId, time() + (86400 * 30), "/", "", isset($_SERVER['HTTPS']), true);
     }
-    
+
 
     public static function getSessionValue($key)
     {
@@ -77,7 +88,7 @@ class SessionController extends Controller
         return self::getSessionValue('user_id');
     }
 
-    public static function ObtenerRol()
+    public static function getRol()
     {
         return self::getSessionValue('user_role');
     }

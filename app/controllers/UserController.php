@@ -15,13 +15,13 @@ class UserController extends Controller
 	}
 
 	/*obtiene todos los datos de un usuarios por id o por email según dato ingresado*/
-	public static function GetUser($emailOrId){
+	public static function getUser($emailOrId){
 		if (filter_var($emailOrId, FILTER_VALIDATE_EMAIL)) {
-			# obtener datos de usuario por Email
+			# get datos de usuario por Email
 			$userData = UserModel::BuscarEmail($emailOrId);
 			// var_dump($userData);
 		}else{
-			# obtener datos de usuario por Id
+			# get datos de usuario por Id
 			$userData = UserModel::findId($emailOrId);
 			// var_dump($userData);
 		}
@@ -29,30 +29,15 @@ class UserController extends Controller
 	}
 
 	/*obtiene todos los datos de un usuarios token*/
-	public static function GetUserbytoken($token){
+	public static function getUserbytoken($token){
 
-		# obtener datos de usuario por token
-		$userData = UserModel::GetUserbytoken($token);
+		# get datos de usuario por token
+		$userData = UserModel::getUserbytoken($token);
 
 		return $userData;
 	}
 
-	/*Validad si el e-mail asociado a un Usuario se encuentra en estado Activo*/
-	public static function checkActivo($userEmail){
-		$datosUsuario = UserModel::BuscarEmail($userEmail);
-		// var_dump($datosUsuario);
-		if ($datosUsuario) {
-			if ($datosUsuario->activo == 'si') {
-				$resultado =  true;
-			}else{
-				// $resultado = 'El Usuario no se encuentra activo!';
-				$resultado = 'Problemas al acceder a la cuenta! <br>(UC-#42)';
-			}
-		}else{
-			$resultado = false;
-		}
-		return $resultado;
-	}
+
 
 
 }

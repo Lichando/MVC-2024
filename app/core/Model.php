@@ -25,7 +25,7 @@ class Model
         return $model;
     }
 
-    // Obtener todos los registros de la tabla
+    // get todos los registros de la tabla
     public static function getAll()
     {
         $model = new static();
@@ -33,7 +33,7 @@ class Model
         return DataBase::getRecords($sql);
     }
 
-    // Obtener nombres de las columnas de una tabla
+    // get nombres de las columnas de una tabla
     public static function getColumnsNames($table)
     {
         return DataBase::getColumnsNames($table);

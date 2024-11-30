@@ -132,7 +132,7 @@ var tablaGeneric = document.querySelectorAll(".generic-table");
 
 // Iterar sobre cada tabla
 tablaGeneric.forEach(function(table) {
-    // Obtener todas las celdas en la primera columna de la tabla
+    // get todas las celdas en la primera columna de la tabla
     var cellsGeneric = table.querySelectorAll("td:first-child");
 
     // Encontrar la longitud máxima de texto en la primera columna

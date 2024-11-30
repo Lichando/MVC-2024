@@ -9,7 +9,7 @@ use PDOException;
 
 class EstadisticaModel extends Model
 {
-    // Método para obtener el ranking de inmobiliarias por propiedades vendidas
+    // Método para get el ranking de inmobiliarias por propiedades vendidas
     public static function getTopInmobiliariasPorVentas()
     {
         try {
@@ -34,11 +34,11 @@ class EstadisticaModel extends Model
 
             return DataBase::getRecords($sql);
         } catch (PDOException $e) {
-            throw new PDOException("Error al obtener el ranking de inmobiliarias por ventas: " . $e->getMessage());
+            throw new PDOException("Error al get el ranking de inmobiliarias por ventas: " . $e->getMessage());
         }
     }
 
-    // Método para obtener el ranking de propiedades más vistas
+    // Método para get el ranking de propiedades más vistas
     public static function getTopPropiedadesPorVistas()
     {
         try {
@@ -59,11 +59,11 @@ class EstadisticaModel extends Model
 
             return DataBase::getRecords($sql);
         } catch (PDOException $e) {
-            throw new PDOException("Error al obtener el ranking de propiedades más vistas: " . $e->getMessage());
+            throw new PDOException("Error al get el ranking de propiedades más vistas: " . $e->getMessage());
         }
     }
 
-    // Método para obtener el ranking de agentes más consultados dentro de una inmobiliaria
+    // Método para get el ranking de agentes más consultados dentro de una inmobiliaria
     public static function getTopVendedoresPorConsultas($inmobiliariaId)
     {
         try {
@@ -89,11 +89,11 @@ class EstadisticaModel extends Model
             $params = ['inmobiliaria_id' => $inmobiliariaId];
             return DataBase::getRecords($sql, $params);
         } catch (PDOException $e) {
-            throw new PDOException("Error al obtener el ranking de agentes más consultados: " . $e->getMessage());
+            throw new PDOException("Error al get el ranking de agentes más consultados: " . $e->getMessage());
         }
     }
 
-    // Método para obtener el ranking de inmobiliarias por puntuación
+    // Método para get el ranking de inmobiliarias por puntuación
     public static function getTopInmobiliariasPorPuntuacion()
     {
         try {
@@ -114,7 +114,7 @@ class EstadisticaModel extends Model
 
             return DataBase::getRecords($sql);
         } catch (PDOException $e) {
-            throw new PDOException("Error al obtener el ranking de inmobiliarias por puntuación: " . $e->getMessage());
+            throw new PDOException("Error al get el ranking de inmobiliarias por puntuación: " . $e->getMessage());
         }
     }
 }

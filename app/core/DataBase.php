@@ -13,7 +13,7 @@ class DataBase
     private static $instance = null; // Instancia estática para el patrón Singleton
     private static $error;
 
-    // Obtener una instancia de la conexión PDO
+    // get una instancia de la conexión PDO
     private static function connection()
     {
         if (self::$dbh === null) {
@@ -42,31 +42,31 @@ class DataBase
         return $statement->fetchAll(PDO::FETCH_OBJ);
     }
 
-    // Ejecutar un SQL que no requiere obtener resultados
+    // Ejecutar un SQL que no requiere get resultados
     public static function execute($sql, $params = [])
     {
         return self::prepareAndExecute($sql, $params)->rowCount();
     }
 
-    // Obtener el número de registros afectados
+    // get el número de registros afectados
     public static function rowCount($sql, $params = [])
     {
         return self::prepareAndExecute($sql, $params)->rowCount();
     }
 
-    // Obtener nombres de columnas de una tabla
+    // get nombres de columnas de una tabla
     public static function getColumnsNames($table)
     {
         $sql = "SELECT column_name FROM information_schema.columns WHERE table_name = :table";
         return self::getRecords($sql, ['table' => $table]);
     }
 
-    // Método para obtener la instancia de conexión a la base de datos
+    // Método para get la instancia de conexión a la base de datos
     public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new self(); // Cambiar Database() por self()
         }
-        return self::$instance->connection(); // Llama al método connection() para obtener la conexión a la base de datos
+        return self::$instance->connection(); // Llama al método connection() para get la conexión a la base de datos
     }
 
     // Ejecutar una transacción
@@ -96,4 +96,20 @@ class DataBase
         }
         return $statement;
     }
+
+     // Función para obtener una sola fila de resultados
+     public static function fetchOne($query, $params = [])
+     {
+         $stmt = self::connection()->prepare($query);
+         $stmt->execute($params);
+         return $stmt->fetch(); // Devuelve la primera fila del resultado
+     }
+ 
+     // Función para obtener varias filas de resultados
+     public static function fetchAll($query, $params = [])
+     {
+         $stmt = self::connection()->prepare($query);
+         $stmt->execute($params);
+         return $stmt->fetchAll(); // Devuelve todas las filas del resultado
+     }
 }

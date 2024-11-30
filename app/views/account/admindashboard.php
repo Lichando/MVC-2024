@@ -90,7 +90,7 @@
     </style>
 </head>
 <body>
-    <?= $header ?> <!-- Aquí incluirías el encabezado común de tu sitio -->
+    <?= $header ?> 
 
     <div class="admin-dashboard">
         <h1>Bienvenido al Dashboard de Administrador</h1>
@@ -101,7 +101,7 @@
                 <i class="fas fa-home"></i>
                 <h2>Propiedades</h2>
                 <p>Gestiona las propiedades registradas en el sistema.</p>
-                <a href="propiedades" class="btn">Ver Propiedades</a>
+                <a href="../admin/propiedades" class="btn">Ver Propiedades</a>
             </div>
 
             <!-- Opción 2: Inmobiliarias -->
@@ -109,7 +109,7 @@
                 <i class="fas fa-building"></i>
                 <h2>Inmobiliarias</h2>
                 <p>Gestiona las inmobiliarias asociadas a la plataforma.</p>
-                <a href="inmobiliarias" class="btn">Ver Inmobiliarias</a>
+                <a href="../admin/inmobiliarias" class="btn">Ver Inmobiliarias</a>
             </div>
 
             <!-- Opción 3: Usuarios -->
@@ -117,7 +117,7 @@
                 <i class="fas fa-users"></i>
                 <h2>Usuarios Registrados</h2>
                 <p>Consulta y gestiona los usuarios registrados en el sistema.</p>
-                <a href="usuarios" class="btn">Ver Usuarios</a>
+                <a href="../admin/usuarios" class="btn">Ver Usuarios</a>
             </div>
 
             <!-- Opción 4: Estadísticas -->
@@ -125,7 +125,7 @@
                 <i class="fas fa-chart-line"></i>
                 <h2>Estadísticas</h2>
                 <p>Visualiza las estadísticas de propiedades, usuarios y más.</p>
-                <a href="estadisticas" class="btn">Ver Estadísticas</a>
+                <a href="../admin/estadisticas" class="btn">Ver Estadísticas</a>
             </div>
         </div>
     </div>

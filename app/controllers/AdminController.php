@@ -5,26 +5,38 @@ namespace app\controllers;
 use \Controller;
 use \Response;
 use app\models\InmobiliariaModel;
-use app\models\PropiedadModel;
-use app\models\UserModel;
-use app\models\EstadisticaModel; // Modelo para obtener estadísticas
+use app\controllers\SessionController; // Asegúrate de incluir el controlador de sesiones
 
 class AdminController extends Controller
 {
-
-
-
     // Mostrar listado de todas las inmobiliarias
     public function actionInmobiliarias()
     {
         // Verificar que el usuario tiene permiso
-        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::getRol(), [1, 2])) {
             Response::redirect('login'); // Redirigir si no tiene permisos
             return;
         }
 
-        // Obtener todas las inmobiliarias
-        $inmobiliarias = InmobiliariaModel::getAllInmobiliarias();
+        // Obtener el término de búsqueda y la página actual
+        $buscar = isset($_GET['buscar']) ? trim($_GET['buscar']) : ''; // Usar trim para evitar espacios en blanco
+        $pagina = isset($_GET['pagina']) ? (int) $_GET['pagina'] : 1;
+
+        // Definir el límite de registros por página
+        $limite = 10;
+
+        // Si no hay término de búsqueda, obtener todas las inmobiliarias
+        if ($buscar === '') {
+            $inmobiliarias = InmobiliariaModel::getInmobiliariasConPaginacion($pagina, $limite);
+            $totalInmobiliarias = InmobiliariaModel::contarInmobiliarias();
+        } else {
+            // Ejecutar búsqueda con el término proporcionado
+            $inmobiliarias = InmobiliariaModel::getInmobiliariasConPaginacion($pagina, $limite, $buscar);
+            $totalInmobiliarias = InmobiliariaModel::contarInmobiliarias($buscar);
+        }
+
+        // Calcular el total de páginas
+        $totalPaginas = ceil($totalInmobiliarias / $limite);
 
         $head = SiteController::head();
         $header = SiteController::header();
@@ -32,147 +44,101 @@ class AdminController extends Controller
             "title" => 'Inmobiliarias',
             "head" => $head,
             "header" => $header,
-            "inmobiliarias" => $inmobiliarias
+            "inmobiliarias" => $inmobiliarias,
+            "buscar" => $buscar,
+            "pagina" => $pagina,
+            "totalPaginas" => $totalPaginas
         ]);
     }
-
+   
+    public function crearInmobiliaria()
+    {
+        // Verificar si se ha enviado el formulario (verifica si los campos POST existen)
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Recoge los datos del formulario
+            $nombre = $_POST['nombre'];
+            $duenioInmobiliaria = $_POST['duenioInmobiliaria'];
+            $matricula = $_POST['matricula'];
+            $direccion = $_POST['direccion'];
+            $telefono = $_POST['telefono'];
+            $email = $_POST['email'];
+    
+            // Aquí va la lógica para obtener la fecha actual
+            $fechaCreacion = date('Y-m-d'); // Obtén la fecha actual en formato 'YYYY-MM-DD'
+            
+            // Por defecto, vamos a asumir que la inmobiliaria está activa
+            $activo = 1; // 1 es para activo, puedes cambiarlo según la lógica que necesites
+    
+            // Aquí puedes hacer validaciones, como verificar si los campos están vacíos, etc.
+            if (empty($nombre) || empty($duenioInmobiliaria) || empty($matricula) || empty($direccion)) {
+                // Si hay algún error, puedes mostrar un mensaje en la misma vista
+                $error = "Por favor, complete todos los campos obligatorios.";
+                Response::render($this->viewDir(__NAMESPACE__), "inmobiliarias", [
+                    'error' => $error,
+                    'nombre' => $nombre,
+                    'duenioInmobiliaria' => $duenioInmobiliaria,
+                    'matricula' => $matricula,
+                    'direccion' => $direccion,
+                    'telefono' => $telefono,
+                    'email' => $email
+                ]);
+                return;
+            }
+    
+            // Aquí va la lógica para registrar la inmobiliaria en la base de datos
+            $inmobiliariaId = InmobiliariaModel::crearInmobiliaria(
+                $nombre, 
+                $duenioInmobiliaria, 
+                $matricula, 
+                $direccion, 
+                $telefono, 
+                $email, 
+                $fechaCreacion, 
+                $activo
+            );
+            
+            if ($inmobiliariaId) {
+                // Si el registro es exitoso, puedes mostrar un mensaje de éxito
+                $successMessage = "Inmobiliaria registrada con éxito!";
+                Response::render($this->viewDir(__NAMESPACE__), "inmobiliarias", [
+                    'successMessage' => $successMessage
+                ]);
+                return;
+            } else {
+                // En caso de algún error al guardar, mostrar un mensaje de error
+                $error = "Hubo un problema al registrar la inmobiliaria. Intenta de nuevo.";
+                Response::render($this->viewDir(__NAMESPACE__), "inmobiliarias", [
+                    'error' => $error
+                ]);
+                return;
+            }
+        }
+    
+        // Si no se ha enviado el formulario, solo renderizas la vista normalmente
+        Response::render($this->viewDir(__NAMESPACE__), "inmobiliarias");
+    }
+    
 
     // Eliminar una inmobiliaria
     public function actionEliminarInmobiliaria($id)
     {
         // Verificar que el usuario tiene permiso
-        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
-            Response::redirect('login');
+        if (!SessionController::EstaLogeado() || !in_array(SessionController::getRol(), [1, 2])) {
+            Response::redirect('login'); // Redirigir si no tiene permisos
+            return;
+        }
+
+        // Verificar si la inmobiliaria existe
+        $inmobiliaria = InmobiliariaModel::getInmobiliariaPorId($id);
+        if (!$inmobiliaria) {
+            Response::redirect('admin/inmobiliarias'); // Redirigir si no se encuentra la inmobiliaria
             return;
         }
 
         // Eliminar la inmobiliaria
-        InmobiliariaModel::deleteInmobiliaria($id);
+        InmobiliariaModel::bajaInmobiliaria($id);
 
         // Redirigir de vuelta a la lista de inmobiliarias
         Response::redirect('admin/inmobiliarias');
-    }
-
-    // Mostrar listado de todas las propiedades
-    public function actionPropiedades()
-    {
-        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
-            Response::redirect('login');
-            return;
-        }
-
-        // Obtener todas las propiedades
-        $propiedades = PropiedadModel::getAllProperties();
-
-        $head = SiteController::head();
-        $header = SiteController::header();
-        Response::render($this->viewDir(__NAMESPACE__), "propiedades", [
-            "title" => 'Propiedades',
-            "head" => $head,
-            "header" => $header,
-            "propiedades" => $propiedades
-        ]);
-    }
-
-    // Eliminar una propiedad
-    public function actionEliminarPropiedad($id)
-    {
-        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
-            Response::redirect('login');
-            return;
-        }
-
-        // Eliminar la propiedad
-        PropiedadModel::deleteProperty($id);
-
-        // Redirigir de vuelta a la lista de propiedades
-        Response::redirect('admin/propiedades');
-    }
-
-    // Mostrar listado de todos los usuarios
-    public function actionUsuarios()
-    {
-        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
-            Response::redirect('login');
-            return;
-        }
-
-        // Obtener todos los usuarios
-        $usuarios = UserModel::getAllUsers();
-
-        $head = SiteController::head();
-        $header = SiteController::header();
-        Response::render($this->viewDir(__NAMESPACE__), "usuarios", [
-            "title" => 'Usuarios Registrados',
-            "head" => $head,
-            "header" => $header,
-            "usuarios" => $usuarios
-        ]);
-    }
-
-    // Eliminar un usuario
-    public function actionEliminarUsuario($id)
-    {
-        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
-            Response::redirect('login');
-            return;
-        }
-
-        // Eliminar el usuario
-        UserModel::deleteUser($id);
-
-        // Redirigir de vuelta a la lista de usuarios
-        Response::redirect('admin/usuarios');
-    }
-
-    // Mostrar listado de corredores y agentes
-    public function actionCorredoresAgentes()
-    {
-        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
-            Response::redirect('login');
-            return;
-        }
-
-        // Obtener todos los corredores y agentes
-        $corredoresAgentes = UserModel::getCorredoresAgentes();
-
-        $head = SiteController::head();
-        $header = SiteController::header();
-        Response::render($this->viewDir(__NAMESPACE__), "corredores-agentes", [
-            "title" => 'Corredores y Agentes Inmobiliarios',
-            "head" => $head,
-            "header" => $header,
-            "corredoresAgentes" => $corredoresAgentes
-        ]);
-    }
-
-    // Mostrar estadísticas de ventas por inmobiliaria
-    public function actionEstadisticas()
-    {
-        if (!SessionController::EstaLogeado() || !in_array(SessionController::ObtenerRol(), [1, 2])) {
-            Response::redirect('login');
-            return;
-        }
-
-        // Obtener el ranking de inmobiliarias por propiedades vendidas
-        $topInmobiliarias = EstadisticaModel::getTopInmobiliariasPorVentas();
-        // Obtener el ranking de propiedades más vistas
-        $topPropiedades = EstadisticaModel::getTopPropiedadesPorVistas();
-        // Obtener el ranking de vendedores más consultados para una inmobiliaria específica
-        $topVendedores = EstadisticaModel::getTopVendedoresPorConsultas($inmobiliariaId);  // Usa un ID de inmobiliaria
-        // Obtener el ranking de inmobiliarias por puntuación
-        $topInmobiliariasPorPuntuacion = EstadisticaModel::getTopInmobiliariasPorPuntuacion();
-
-        $head = SiteController::head();
-        $header = SiteController::header();
-        Response::render($this->viewDir(__NAMESPACE__), "estadisticas", [
-            "title" => 'Estadísticas y Rankings',
-            "head" => $head,
-            "header" => $header,
-            "topInmobiliarias" => $topInmobiliarias,
-            "topPropiedades" => $topPropiedades,
-            "topVendedores" => $topVendedores,
-            "topInmobiliariasPorPuntuacion" => $topInmobiliariasPorPuntuacion
-        ]);
     }
 }

@@ -1,101 +1,144 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?></title>
+    <title><?= htmlspecialchars($title) ?></title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <?= $head ?> <!-- Aquí incluirías los metadatos, CSS, JS, etc. -->
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-            color: #333;
-        }
-        .admin-dashboard {
-            max-width: 1200px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
+        /* Tu CSS personalizado */
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
             text-align: center;
-            font-size: 36px;
-            color: #333;
-            margin-bottom: 40px;
-            font-weight: bold;
         }
-        .admin-options {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
         }
-        .option-card {
-            background-color: #fff;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .option-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        .option-card h2 {
-            font-size: 28px;
-            color: #007bff;
-            margin-bottom: 20px;
-        }
-        .option-card p {
-            font-size: 16px;
-            color: #777;
-            margin-bottom: 25px;
-        }
-        .option-card .btn {
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 6px;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-        .option-card .btn:hover {
-            background-color: #0056b3;
-        }
-        .footer {
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: 40px;
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
         }
     </style>
 </head>
+
 <body>
     <?= $header ?> <!-- Aquí incluirías el encabezado común de tu sitio -->
 
     <div class="admin-dashboard">
         <h1>Gestionar Inmobiliarias</h1>
 
-        <div class="admin-options">
-            <!-- Lista de Inmobiliarias -->
-            <div class="option-card">
-                <i class="fas fa-building"></i>
-                <h2>Inmobiliarias Registradas</h2>
-                <p>Gestiona las inmobiliarias registradas en el sistema.</p>
-                <a href="admin/inmobiliarias/crear" class="btn">Agregar Inmobiliaria</a>
-                <a href="admin/inmobiliarias/listar" class="btn">Ver Inmobiliarias</a>
+        <!-- Mensajes de éxito o error -->
+        <?php if (isset($successMessage)): ?>
+            <div class="alert alert-success">
+                <?= $successMessage; ?>
             </div>
+        <?php elseif (isset($error)): ?>
+            <div class="alert alert-danger">
+                <?= $error; ?>
+            </div>
+        <?php endif; ?>
+
+        <!-- Formulario de Registro de Inmobiliaria -->
+        <div class="register-container">
+            <h2>Registrar Nueva Inmobiliaria</h2>
+            <form method="POST">
+                <label for="nombre">Nombre</label>
+                <input type="text" name="nombre" id="nombre" required value="<?= isset($nombre) ? htmlspecialchars($nombre) : '' ?>">
+
+                <label for="duenioInmobiliaria">Dueño</label>
+                <input type="text" name="duenioInmobiliaria" id="duenioInmobiliaria" required value="<?= isset($duenioInmobiliaria) ? htmlspecialchars($duenioInmobiliaria) : '' ?>">
+
+                <label for="matricula">Matrícula</label>
+                <input type="text" name="matricula" id="matricula" required value="<?= isset($matricula) ? htmlspecialchars($matricula) : '' ?>">
+
+                <label for="direccion">Dirección</label>
+                <input type="text" name="direccion" id="direccion" required value="<?= isset($direccion) ? htmlspecialchars($direccion) : '' ?>">
+
+                <label for="telefono">Teléfono</label>
+                <input type="text" name="telefono" id="telefono" value="<?= isset($telefono) ? htmlspecialchars($telefono) : '' ?>">
+
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" value="<?= isset($email) ? htmlspecialchars($email) : '' ?>">
+
+                <button type="submit" class="btn">Registrar Inmobiliaria</button>
+            </form>
+        </div>
+
+        <!-- Formulario de búsqueda -->
+        <div class="search-container">
+            <form method="GET" action="admin/inmobiliarias">
+                <input type="text" name="buscar" id="buscar" placeholder="Buscar Inmobiliaria..."
+                    value="<?= isset($buscar) ? htmlspecialchars($buscar) : '' ?>">
+                <button type="submit" class="btn">Buscar</button>
+            </form>
+        </div>
+
+        <!-- Lista de Inmobiliarias -->
+        <div class="admin-options">
+            <?php if (!empty($inmobiliarias)): ?>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($inmobiliarias as $inmobiliaria): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($inmobiliaria->nombre) ?></td>
+                                <td><?= htmlspecialchars($inmobiliaria->email) ?></td>
+                                <td><?= htmlspecialchars($inmobiliaria->telefono) ?></td>
+                                <td><?= htmlspecialchars($inmobiliaria->direccion) ?></td>
+                                <td><a href="admin/eliminarInmobiliaria/<?= $inmobiliaria->id ?>">Eliminar</a></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p>No se encontraron inmobiliarias.</p>
+            <?php endif; ?>
         </div>
     </div>
 
     <?= $footer ?> <!-- Pie de página común del sitio -->
+
+    <!-- Script para abrir y cerrar el modal -->
+    <script>
+        // Obtener el modal
+        var modal = document.getElementById("inmobiliariaModal");
+
+        // Obtener el botón que abre el modal
+        var openModalBtn = document.getElementById("openModalBtn");
+
+        // Obtener el botón de cierre del modal
+        var closeModalBtn = document.getElementById("closeModalBtn");
+
+        // Cuando el usuario hace clic en el botón, abrir el modal
+        openModalBtn.onclick = function () {
+            modal.style.display = "block";
+        }
+
+        // Cuando el usuario hace clic en el botón de cierre, cerrar el modal
+        closeModalBtn.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // Cuando el usuario haga clic fuera del modal, cerrarlo
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
 </body>
+
 </html>

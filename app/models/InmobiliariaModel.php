@@ -2,52 +2,91 @@
 
 namespace app\models;
 
+use app\controllers\SessionController;
 use \DataBase;
 use \Model;
-use PDOException;
 use Exception;
 
 class InmobiliariaModel extends Model
 {
-    // Este modelo ahora usará la conexión gestionada por la clase base Model
     protected $table = "inmobiliarias";
     protected $primaryKey = "id";
 
-    // Método para obtener todas las inmobiliarias
+    // Obtener todas las inmobiliarias
     public static function getAllInmobiliarias()
     {
         $sql = "SELECT * FROM inmobiliarias";
-        return DataBase::getRecords($sql); // Obtiene todos los registros de inmobiliarias
+        return DataBase::getRecords($sql);
     }
 
-    // Método para obtener una inmobiliaria por su ID
-    public static function getInmobiliariaById($id)
+    // Obtener una inmobiliaria por ID
+    public static function getInmobiliariasId($id)
     {
         $sql = "SELECT * FROM inmobiliarias WHERE id = :id";
         return DataBase::getRecords($sql, ['id' => $id]);
     }
 
-    // Método para obtener el ID de la inmobiliaria por el ID del dueño
-    public static function getInmobiliariaIdByOwner($ownerId)
+    // Crear inmobiliaria
+    public static function crearInmobiliaria($duenioInmobiliaria, $nombre, $matricula, $direccion, $telefono, $email)
     {
-        $sql = "SELECT id FROM inmobiliarias WHERE dueñoInmobiliaria = :ownerId";
-        return DataBase::getRecords($sql, ['ownerId' => $ownerId]);
+        // Verificar si el dueño ya tiene una inmobiliaria
+        $query = "SELECT COUNT(*) FROM inmobiliarias WHERE duenioInmobiliaria = :duenioInmobiliaria";
+        $params = [':duenioInmobiliaria' => $duenioInmobiliaria];
+        $result = DataBase::fetchOne($query, $params);
+
+        if ($result[0] > 0) {
+            throw new Exception('Ya tenes una inmobiliaria registrada.');
+        }
+
+        // Verificar si la matrícula ya existe
+        $query = "SELECT COUNT(*) FROM inmobiliarias WHERE matricula = :matricula";
+        $params = [':matricula' => $matricula];
+        $result = DataBase::fetchOne($query, $params);
+
+        if ($result[0] > 0) {
+            throw new Exception('La matrícula ya está registrada.');
+        }
+
+        // Insertar la nueva inmobiliaria
+        $query = "INSERT INTO inmobiliarias (duenioInmobiliaria, nombre, matricula, direccion, telefono, email, fecha_creacion, activo) 
+                  VALUES (:duenioInmobiliaria, :nombre, :matricula, :direccion, :telefono, :email, NOW(), 1)";
+        $params = [
+            ':duenioInmobiliaria' => $duenioInmobiliaria,
+            ':nombre' => $nombre,
+            ':matricula' => $matricula,
+            ':direccion' => $direccion,
+            ':telefono' => $telefono,
+            ':email' => $email
+        ];
+
+        // Ejecutar la inserción
+        DataBase::execute($query, $params);
+
+        // Asignar el rol 3 (Administrador Inmobiliaria) al dueño
+        self::asignarRolInmobiliaria($duenioInmobiliaria);
+
+        return true; // Retornar true para indicar que la operación fue exitosa
     }
 
-    // Método para crear una inmobiliaria
-    public static function create($data)
+    public static function asignarRolInmobiliaria($duenioInmobiliaria)
     {
-        $sql = "INSERT INTO inmobiliarias (nombre, dueñoInmobiliaria, matricula, direccion, telefono, email, fecha_creacion, activo)
-                VALUES (:nombre, :dueñoInmobiliaria, :matricula, :direccion, :telefono, :email, :fecha_creacion, :activo)";
-        return DataBase::execute($sql, $data); // Ejecuta la consulta de inserción
+        // Actualizar el rol del usuario a '3' (Administrador Inmobiliaria)
+        $query = "UPDATE usuarios SET rol = 3 WHERE id = :duenioInmobiliaria";
+        $params = [':duenioInmobiliaria' => $duenioInmobiliaria];
+
+        DataBase::execute($query, $params);
+
+        // Actualizar la sesión del usuario con el nuevo rol
+        SessionController::login($duenioInmobiliaria, 3, SessionController::getSessionValue('user_name'), $duenioInmobiliaria);
+
     }
 
-    // Método para actualizar los datos de una inmobiliaria
-    public static function update($id, $data)
+    // Actualizar una inmobiliaria
+    public static function ActualizarInmobiliaria($id, $data)
     {
         $sql = "UPDATE inmobiliarias
                 SET nombre = :nombre, 
-                    dueñoInmobiliaria = :dueñoInmobiliaria, 
+                    duenioInmobiliaria = :duenioInmobiliaria, 
                     matricula = :matricula,
                     direccion = :direccion,
                     telefono = :telefono,
@@ -56,88 +95,147 @@ class InmobiliariaModel extends Model
                     activo = :activo
                 WHERE id = :id";
         $data['id'] = $id;
-        return DataBase::execute($sql, $data); // Ejecuta la consulta de actualización
+        return DataBase::execute($sql, $data);
     }
 
-    // Método para eliminar una inmobiliaria (físicamente) - No se usa, se utiliza la baja lógica
-    public static function delete($id)
+    // Activar inmobiliaria
+    public static function activarInmobiliaria($id)
     {
-        $sql = "DELETE FROM inmobiliarias WHERE id = :id";
-        return DataBase::execute($sql, ['id' => $id]); // Elimina la inmobiliaria de la base de datos
+        $consulta = "UPDATE inmobiliarias SET activo = 1 WHERE id = :id";
+        $params = ['id' => $id];
+        Database::execute($consulta, $params);
     }
 
-    // Método para dar de baja (inactivar) una inmobiliaria
+    // Dar de baja (inactivar) una inmobiliaria
     public static function bajaInmobiliaria($id)
     {
-        // Cambiar el estado de la inmobiliaria a "inactiva" (activo = 0)
         $sql = "UPDATE inmobiliarias SET activo = 0 WHERE id = :id";
         return DataBase::execute($sql, ['id' => $id]);
     }
 
-    // Método para activar una inmobiliaria
-    public static function activarInmobiliaria($id)
+    // Obtener inmobiliarias con búsqueda y paginación
+    public static function getInmobiliariasConPaginacion($pagina, $limite, $buscar = '')
     {
-        // Cambiar el estado a "activo" (activo = 1)
-        $sql = "UPDATE inmobiliarias SET activo = 1 WHERE id= :id";
-        return DataBase::execute($sql, ['id' => $id]);
-    }
+        // Validar parámetros
+        $pagina = max(1, (int) $pagina);
+        $limite = max(1, (int) $limite);
+        $offset = ($pagina - 1) * $limite;
 
-    // Método de validación de propiedad: Verificar que el usuario es el dueño de la inmobiliaria
-    public static function validateOwnership($inmobiliariaId, $userId)
-    {
-        $sql = "SELECT 1 FROM inmobiliarias WHERE id= :id AND dueñoInmobiliaria = :userId";
-        $resultado = DataBase::getRecords($sql, ['inmobiliariaId' => $inmobiliariaId, 'userId' => $userId]);
+        $sql = "SELECT * FROM inmobiliarias WHERE 1";
 
-        return !empty($resultado); // Devuelve true si existe la relación, false si no
-    }
-
-    // Método para asignar un rol (de corredor o agente) a un usuario
-    public static function asignarRol($inmobiliariaId, $userEmail, $rol)
-    {
-        // Verificar si el rol es válido
-        if (!in_array($rol, [4, 5])) { // Solo puede asignar rol 4 o 5 (corredor y agente)
-            throw new Exception("Rol no válido.");
+        // Añadir condiciones de búsqueda si corresponde
+        $parametros = [];
+        if (!empty($buscar)) {
+            $sql .= " AND (nombre LIKE :buscar OR direccion LIKE :buscar OR telefono LIKE :buscar)";
+            $parametros['buscar'] = '%' . $buscar . '%';
         }
 
-        // Verificar que el usuario no tiene rol de corredor o agente (roles 3 y 4)
-        $sql = "SELECT id FROM usuarios WHERE email = :email AND rol NOT IN (3, 4)";
-        $user = DataBase::getRecords($sql, ['email' => $userEmail]);
+        // Añadir LIMIT y OFFSET (directamente en la consulta)
+        $sql .= " LIMIT $limite OFFSET $offset";
 
-        if (empty($user)) {
-            throw new Exception("El usuario no existe o no puede asignarse este rol.");
-        }
-
-        $userId = $user[0]->id; // Suponemos que se obtiene el primer resultado
-
-        // Actualizar el rol del usuario
-        $sql = "UPDATE usuarios SET rol = :role WHERE id = :userId";
-        return DataBase::execute($sql, ['role' => $rol, 'userId' => $userId]);
+        // Ejecutar la consulta
+        return DataBase::getRecords($sql, $parametros);
     }
 
-    // Método para asignar rol de Corredor o Agente a un usuario
-    public static function asignarCorredorOAgente($inmobiliariaId, $userEmail, $rol)
+    // Contar total de inmobiliarias (con opción de búsqueda)
+    public static function contarInmobiliarias($buscar = '')
     {
-        // Verificar que el dueño de la inmobiliaria está realizando la acción
-        if (!self::validateOwnership($inmobiliariaId, SessionController::getUserId())) {
-            throw new Exception("No tienes permiso para asignar roles en esta inmobiliaria.");
+        $sql = "SELECT COUNT(*) as total FROM inmobiliarias WHERE 1";
+
+        $parametros = [];
+        if (!empty($buscar)) {
+            $sql .= " AND (nombre LIKE :buscar OR direccion LIKE :buscar OR telefono LIKE :buscar)";
+            $parametros['buscar'] = '%' . $buscar . '%';
         }
 
-        // Verificar que el rol es válido (corredorInmobiliario o agenteInmobiliario)
-        if (!in_array($rol, [4, 5])) {
-            throw new Exception("Rol no válido.");
-        }
-
-        // Asignar el rol al usuario
-        return self::asignarRol($inmobiliariaId, $userEmail, $rol);
+        $result = DataBase::getRecords($sql, $parametros);
+        return $result[0]->total ?? 0;
     }
 
-    // Método para obtener los corredores y agentes asociados a una inmobiliaria
+    // Obtener corredores y agentes asociados a una inmobiliaria
     public static function getCorredoresYAgentes($inmobiliariaId)
     {
         $sql = "SELECT u.id, u.email, u.rol
                 FROM usuarios u
-                INNER JOIN inmobiliarias i ON u.id = i.dueñoInmobiliaria WHERE i.id = :inmobiliariaId AND u.rol IN (4, 5)";
+                INNER JOIN inmobiliarias i ON u.id = i.duenioInmobiliaria 
+                WHERE i.id = :inmobiliariaId AND u.rol IN (4, 5)";
         return DataBase::getRecords($sql, ['inmobiliariaId' => $inmobiliariaId]);
     }
 
+    // Verificar si el usuario es el dueño de la inmobiliaria
+    public static function ValidarDuenio($id, $userId)
+    {
+        $sql = "SELECT COUNT(*) as total FROM inmobiliarias WHERE id = :id AND duenioInmobiliaria = :userId";
+        $result = DataBase::getRecords($sql, ['id' => $id, 'userId' => $userId]);
+        return $result[0]->total > 0;
+    }
+
+
+
+    // Verificar si el usuario tiene una inmobiliaria
+    public static function usuarioTieneInmobiliaria($userId)
+    {
+        $sql = "SELECT COUNT(*) as total FROM inmobiliarias WHERE duenioInmobiliaria = :userId";
+        $result = DataBase::getRecords($sql, ['userId' => $userId]);
+        return $result[0]->total > 0;  // Devuelve true si el usuario tiene inmobiliaria
+    }
+
+    public static function asignarCorredorOAgente($inmobiliariaId, $userEmail, $rol)
+    {
+        // Validar que el rol sea uno de los permitidos: Corredor (4) o Agente (5)
+        if (!in_array($rol, [4, 5])) {
+            throw new Exception('Rol no válido. Debe ser Corredor (4) o Agente (5).');
+        }
+
+        // Verificar que el usuario existe y obtener su información
+        $usuario = self::getUsuarioPorEmail($userEmail);
+        if (!$usuario) {
+            throw new Exception('Usuario no encontrado.');
+        }
+
+        // Verificar si el usuario ya está asignado a la inmobiliaria
+        if ($usuario['inmobiliaria'] != null && $usuario['inmobiliaria'] != $inmobiliariaId) {
+            throw new Exception('Este usuario ya está asignado a otra inmobiliaria.');
+        }
+
+        // Asignar o actualizar la inmobiliaria y el rol del usuario
+        $query = "UPDATE usuarios SET inmobiliaria = :inmobiliariaId, rol = :rol WHERE email = :email";
+        $params = [
+            'inmobiliariaId' => $inmobiliariaId,
+            'rol' => $rol,
+            'email' => $userEmail
+        ];
+        DataBase::execute($query, $params);
+
+        return true;
+    }
+
+    public static function getUsuarioPorEmail($email)
+    {
+        // Obtener usuario por su email
+        $query = "SELECT * FROM usuarios WHERE email = :email";
+        $params = ['email' => $email];
+        return DataBase::fetchOne($query, $params);
+    }
+
+
+    public static function getInmobiliariaInfo($userId)
+    {
+        $query = "
+            SELECT u.inmobiliaria_id, i.nombre
+            FROM usuarios u
+            JOIN inmobiliarias i ON i.id = u.inmobiliaria_id
+            WHERE u.id = :userId
+        ";
+
+        $stmt = DataBase::prepare($query);
+        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Fetch los resultados como un array asociativo
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Retornar la información o null si no existe
+        return $result ?: null;
+    }
 }

@@ -12,7 +12,7 @@ class AccountController extends Controller
     private function redirectByRole($rol)
     {
         if ($rol == 1 || $rol == 2) {
-            Response::redirect('admin-dashboard'); // Redirigir al dashboard administrativo
+            Response::redirect('admindashboard'); // Redirigir al dashboard administrativo
         } else {
             Response::redirect('dashboard'); // Redirigir al dashboard de usuarios inmobiliarios
         }
@@ -26,7 +26,7 @@ class AccountController extends Controller
             return false;
         }
 
-        $rol = SessionController::ObtenerRol();
+        $rol = SessionController::getRol();
         if (!in_array($rol, $rolesPermitidos)) {
             Response::redirect('login');
             return false;
@@ -40,7 +40,7 @@ class AccountController extends Controller
     {
         // Si el usuario ya está autenticado, redirigir según el rol
         if (SessionController::EstaLogeado()) {
-            $rol = SessionController::ObtenerRol();
+            $rol = SessionController::getRol();
             $this->redirectByRole($rol); // Redirige según el rol
             return;
         }
@@ -63,7 +63,7 @@ class AccountController extends Controller
 
                 if ($user) {
                     // Almacenar en sesión
-                    SessionController::login($user->id,$user->rol, $user->nombre);
+                    SessionController::login($user->id, $user->rol, $user->nombre,$user->inmobiliaria_id);
 
                     // Redirigir según el rol
                     $this->redirectByRole($user->rol);
@@ -92,72 +92,58 @@ class AccountController extends Controller
     {
         // Verificar la autenticación y rol del usuario
         $rolUsuario = $this->verificarAutenticacionYRol([1, 2, 3, 4, 5, 6]);
-        if (!$rolUsuario) return; // Si no está autenticado o tiene un rol inválido, se redirige
-        // Obtener el nombre de usuario desde la sesión
-         // Obtener el nombre de usuario desde la sesión
+        if (!$rolUsuario)
+            return; // Si no está autenticado o tiene un rol inválido, se redirige
+    
+        // get el nombre de usuario desde la sesión
         $userName = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Invitado';
-
-
-        // Variables que controlan las secciones del dashboard
-        $MostrarGestorPropiedades = false;
-        $MostrarOpcionesComerciales = false;
-        $MostrarOpcionesAdmin = false;
-
-        // Definir permisos según el rol del usuario
+        $inmobiliariaNombre = isset($_SESSION['inmobiliaria_nombre']) ? $_SESSION['inmobiliaria_nombre']: 'No tiene';
+            
+        // Redirigir a diferentes dashboards según el rol
         switch ($rolUsuario) {
+            case 6: // Cliente
+                // Redirigir al dashboard específico para clientes
+                Response::render($this->viewDir(__NAMESPACE__), "clientedashboard", [
+                    "title" => 'Dashboard Cliente',
+                    "head" => SiteController::head(),
+                    "header" => SiteController::header(),
+                    "footer" => SiteController::footer(),
+                    "userName" => $userName,
+                ]);
+                return;
+    
+            case 3: // Administrador Inmobiliaria
+            case 4: // Corredor Inmobiliario
+            case 5: // Agente Inmobiliario
+                // Redirigir al dashboard inmobiliario
+                Response::render($this->viewDir(__NAMESPACE__), "inmobiliariodashboard", [
+                    "title" => 'Dashboard Inmobiliario',
+                    "head" => SiteController::head(),
+                    "header" => SiteController::header(),
+                    "footer" => SiteController::footer(),
+                    "userName" => $userName,
+                    "inmobiliariaNombre" => $inmobiliariaNombre,
+                ]);
+                return;
+    
             case 1: // Administrador
             case 2: // Empleado
-                $MostrarOpcionesAdmin = true; // El administrador/empleado verá opciones administrativas
-                break;
-            case 3: // Administrador Inmobiliaria
-                $MostrarGestorPropiedades = true; // El administrador inmobiliario gestiona propiedades
-                break;
-            case 4: // Corredor Inmobiliario
-                $MostrarGestorPropiedades = true; // El corredor inmobiliario gestiona propiedades
-                break;
-            case 5: // Agente Inmobiliario
-                $MostrarOpcionesComerciales = true; // El agente tiene acceso comercial
-                break;
-            case 6: // Cliente
-                // El cliente solo verá opciones de búsqueda de propiedades
-                break;
+                // Redirigir al dashboard administrativo
+                Response::render($this->viewDir(__NAMESPACE__), "admindashboard", [
+                    "title" => 'Admin Dashboard',
+                    "head" => SiteController::head(),
+                    "header" => SiteController::header(),
+                    "footer" => SiteController::footer(),
+                ]);
+                return;
+    
             default:
-                Response::redirect('login'); // En caso de un rol no reconocido, redirigir a login
+                // Si el rol no es válido, redirigir a login
+                Response::redirect('login');
                 return;
         }
-
-        // Renderizar la vista del Dashboard
-        $head = SiteController::head();
-        $header = SiteController::header();
-        $footer = SiteController::footer();
-        Response::render($this->viewDir(__NAMESPACE__), "dashboard", [
-            "title" => 'Dashboard',
-            "head" => $head,
-            "header" => $header,
-            "footer" => $footer,
-            "userName" => $userName,
-            "MostrarGestorPropiedades" => $MostrarGestorPropiedades,
-            "MostrarOpcionesComerciales" => $MostrarOpcionesComerciales,
-            "MostrarOpcionesAdmin" => $MostrarOpcionesAdmin,
-        ]);
     }
-
-    // Acción para el dashboard de administración
-    public function actionAdminDashboard()
-    {
-        // Verificar si el usuario está autenticado y tiene un rol válido (1 = Admin, 2 = Empleado)
-        $rolUsuario = $this->verificarAutenticacionYRol([1, 2]);
-        if (!$rolUsuario) return; // Si no está autenticado o tiene un rol inválido, se redirige
-
-        // Renderizar la vista del Admin Dashboard
-        $head = SiteController::head();
-        $header = SiteController::header();
-        Response::render($this->viewDir(__NAMESPACE__), "admindashboard", [
-            "title" => 'Admin Dashboard',
-            "head" => $head,
-            "header" => $header,
-        ]);
-    }
+    
 
     public function actionRegister()
     {
@@ -166,7 +152,7 @@ class AccountController extends Controller
             $nombre = $_POST['nombre'] ?? '';
             $email = $_POST['email'] ?? '';
             $password = $_POST['password'] ?? '';
-            $rol = 4;
+            $rol = 6;
 
             // Validación de entrada
             if (empty($nombre) || empty($email) || empty($password)) {

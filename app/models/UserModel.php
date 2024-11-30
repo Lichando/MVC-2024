@@ -36,6 +36,39 @@ class UserModel extends Model
         return null;
     }
 
+    public static function getInmobiliariaNombre($inmobiliariaId) {
+        $sql = "SELECT nombre FROM inmobiliarias WHERE id = :inmobiliariaId";
+        $params = ['inmobiliariaId' => $inmobiliariaId];
+        
+        // Obtener los registros
+        $result = DataBase::getRecords($sql, $params);
+        
+        // Si la consulta devuelve algún registro, retornamos solo el nombre
+        if (count($result) > 0) {
+            return $result[0]->nombre;  // Devolver solo el nombre
+        }
+        
+        // Si no se encuentra ninguna inmobiliaria, puedes retornar un valor predeterminado o null
+        return null;
+    }
+
+    public static function getInmobiliariaIdPorUsuario($userId) {
+        $sql = "SELECT inmobiliaria_id FROM usuarios WHERE id = :usuarioId";
+        $params = [':usuarioId' => $userId];
+        
+        // Obtener los registros
+        $resultado = DataBase::getRecords($sql, $params);
+        
+        // Verificar si el resultado contiene registros
+        if (count($resultado) > 0) {
+            return $resultado[0]->inmobiliaria_id;  // Acceder al 'inmobiliaria_id' del primer registro
+        } else {
+            return null;  // Si no se encuentra ningún registro, retorna null
+        }
+    }
+    
+
+
     // Método para buscar un usuario por su email
     public static function BuscarEmail($email)
     {
@@ -45,7 +78,7 @@ class UserModel extends Model
     }
 
     // Método para crear un nuevo usuario
-    public static function CrearUsuario($nombre, $email, $hashedPassword, $rol = 4)
+    public static function CrearUsuario($nombre, $email, $hashedPassword, $rol = 6)
     {
         $sql = "INSERT INTO usuarios (nombre, email, contrasena, rol, fecha_registro, activo) 
                 VALUES (:nombre, :email, :contrasena, :rol, CURRENT_TIMESTAMP, 1)";
@@ -74,7 +107,7 @@ class UserModel extends Model
         return DataBase::execute($sql, $params);
     }
 
-    // Método para obtener un usuario por su token
+    // Método para get un usuario por su token
     public static function getUserByToken($token)
     {
         $sql = "SELECT * FROM usuarios WHERE token = :token";
@@ -82,7 +115,7 @@ class UserModel extends Model
     }
 
     // Método para actualizar la información del usuario
-    public static function updateUser($id, $data)
+    public static function ActualizarUser($id, $data)
     {
         $sql = "UPDATE usuarios
                 SET nombre = :nombre,
@@ -96,7 +129,7 @@ class UserModel extends Model
         return DataBase::execute($sql, $data);
     }
 
-    // Método para obtener la lista de usuarios
+    // Método para get la lista de usuarios
     public static function getAllUsers()
     {
         $sql = "SELECT * FROM usuarios";
