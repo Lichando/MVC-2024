@@ -36,7 +36,7 @@ class UserModel extends Model
         return null;
     }
 
-    public static function getInmobiliariaNombre($inmobiliariaId) {
+    public static function ObtenerInmobiliariaNombre($inmobiliariaId) {
         $sql = "SELECT nombre FROM inmobiliarias WHERE id = :inmobiliariaId";
         $params = ['inmobiliariaId' => $inmobiliariaId];
         
@@ -52,7 +52,7 @@ class UserModel extends Model
         return null;
     }
 
-    public static function getInmobiliariaIdPorUsuario($userId) {
+    public static function ObtenerInmobiliariaIdPorUsuario($userId) {
         $sql = "SELECT inmobiliaria_id FROM usuarios WHERE id = :usuarioId";
         $params = [':usuarioId' => $userId];
         
@@ -80,8 +80,8 @@ class UserModel extends Model
     // Método para crear un nuevo usuario
     public static function CrearUsuario($nombre, $email, $hashedPassword, $rol = 6)
     {
-        $sql = "INSERT INTO usuarios (nombre, email, contrasena, rol, fecha_registro, activo) 
-                VALUES (:nombre, :email, :contrasena, :rol, CURRENT_TIMESTAMP, 1)";
+        $sql = "INSERT INTO usuarios (nombre, email, contrasena, rol, fecha_registro, activo,inmobiliaria_id) 
+                VALUES (:nombre, :email, :contrasena, :rol, CURRENT_TIMESTAMP, 1,0)";
         
         $params = [
             'nombre' => $nombre,
@@ -135,4 +135,46 @@ class UserModel extends Model
         $sql = "SELECT * FROM usuarios";
         return DataBase::getRecords($sql);
     }
+
+public static function contarClientes()
+{
+    try {
+        $db = DataBase::getInstance();
+        $stmt = $db->query("SELECT COUNT(*) as total FROM usuarios");
+        $result = $stmt->fetch(\PDO::FETCH_OBJ);
+        return $result->total;
+    } catch (PDOException $e) {
+        throw new Exception("Error al contar los clientes: " . $e->getMessage());
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

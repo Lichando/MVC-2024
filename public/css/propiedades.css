@@ -1,0 +1,533 @@
+/* Tabla de propiedades */
+.property-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+    font-size: 16px;
+    font-family: 'Arial', sans-serif;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.no-properties-message {
+    color: #c82333;
+    margin: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.property-table thead {
+    background-color: #343a40;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.property-table th,
+.property-table td {
+    padding: 14px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.property-table th {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.property-table tbody tr {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.3s ease;
+}
+
+.property-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.property-table tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+.property-table td a.btn {
+    display: inline-block;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.property-table td a.btn-warning {
+    background-color: #ffc107;
+}
+
+.property-table td a.btn-warning:hover {
+    background-color: #e0a800;
+    color: #ffffff;
+}
+
+.property-table td a.btn-danger {
+    background-color: #dc3545;
+}
+
+.property-table td a.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.property-table td a.btn-success {
+    background-color: #28a745;
+}
+
+.property-table td a.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Popup Content */
+.popup-content {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Close Button */
+.popup-close {
+    position: relative;
+    /* Cambiamos el tipo de posición a relativa */
+    margin-top: 20px;
+    /* Añadimos un espacio superior */
+    display: block;
+    /* Aseguramos que el botón ocupe una nueva línea */
+    background-color: #dc3545;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    /* Ajustamos un poco el tamaño del botón */
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    /* Centrado si lo necesitas */
+    transition: background-color 0.3s ease;
+}
+
+.popup-close:hover {
+    background-color: #c82333;
+}
+
+
+/* Formulario dentro del popup */
+#popup-body {
+    margin-top: 10px;
+}
+
+
+#popup-body h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+#popup-body p {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+
+#popup-body form button[type="submit"] {
+    background-color: #4caf50;
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#popup-body form button[type="submit"]:hover {
+    background-color: #1d4e1f;
+}
+
+#mensajeFeedback {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #28a745;
+    text-align: center;
+    
+}
+
+.catalogo-propiedades {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    justify-items: center;
+}
+.listadopr{
+    text-align: center;
+    font-size: 30px;
+    color: #04771f;
+    text-shadow:2px 2px 2px #929292;
+    
+}
+
+.propiedad {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+
+.propiedad:hover {
+    transform: scale(1.05);
+}
+
+.propiedad img {
+    width: 100%;
+    height: auto;
+}
+
+.propiedad h2 {
+    margin: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.propiedad p {
+    margin: 10px;
+    font-size: 14px;
+    color: #777;
+}
+
+.ver-detalles {
+    display: block;
+    background-color: #4caf50;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    text-decoration: none;
+    margin: 10px 0 10px 0;
+    border-radius: 4px;
+}
+
+.ver-detalles:hover {
+    background-color: #1d4e1f;
+}
+
+
+/* Contenedor de título de propiedad */
+
+.detalles-propiedad{
+    margin: 20px;
+    padding:20px;
+    box-shadow: 2px 2px 2px 2px #ccc;
+    border-radius: 10px;
+}
+.propiedad-titulo h1 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Contenedor para precio */
+.propiedad-precio p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #5f6368;
+}
+
+/* Contenedor de imágenes de propiedad */
+.propiedad-imagenes {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.propiedad-imagenes img {
+    max-width: 32%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+}
+
+/* Sección de detalles adicionales */
+
+.propiedad-titulo{
+        text-transform: capitalize;
+}
+.propiedad-detalles p {
+    font-size: 1rem;
+    margin: 10px 0;
+}
+
+.propiedad-detalles p strong {
+    font-weight: bold;
+}
+
+
+
+/* Estilos para pantallas pequeñas (hasta 768px) */
+@media screen and (max-width: 768px) {
+    .popup-content {
+        width: 95%;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin: 10px auto;
+    }
+
+    .property-table th {
+        display: none;
+    }
+
+    .property-table td {
+        padding: 12px 15px;
+        color: #495057;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+
+
+    .property-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .popup-body form button[type="submit"] {
+        font-size: 14px;
+        padding: 10px 15px;
+        border-radius: 5px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    .popup-close {
+        font-size: 14px;
+        padding: 10px;
+        background-color: #ccc;
+        border: none;
+        border-radius: 50%;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .catalogo-propiedades {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .propiedad {
+        padding: 15px;
+    }
+  
+
+}
+
+/* Estilos para pantallas muy pequeñas (hasta 480px) */
+@media screen and (max-width: 480px) {
+    .popup-content {
+        padding: 15px;
+        width: 95%;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .property-table th,
+    .property-table td {
+        font-size: 12px;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .popup-body form button[type="submit"] {
+        font-size: 12px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    .popup-close {
+        font-size: 12px;
+        padding: 8px;
+        background-color: #ccc;
+        border: none;
+        border-radius: 50%;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .catalogo-propiedades {
+        grid-template-columns: 1fr;
+    }
+
+    .propiedad h2 {
+        font-size: 16px;
+    }
+
+    .propiedad p {
+        font-size: 12px;
+    }
+
+    .ver-detalles {
+        font-size: 12px;
+        padding: 8px 0;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .modal p {
+        font-size: 14px;
+    }
+
+    .close {
+        font-size: 24px;
+    }
+}
+
+/* Estilos para pantallas grandes (más de 1024px) */
+@media screen and (min-width: 1024px) {
+    .popup-content {
+        width: 600px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+    }
+
+    .property-table th,
+    .property-table td {
+        font-size: 18px;
+        padding: 15px;
+        text-align: left;
+    }
+
+    .property-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .popup-body form button[type="submit"] {
+        font-size: 16px;
+        padding: 12px 20px;
+        border-radius: 5px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    .popup-close {
+        font-size: 16px;
+        padding: 12px;
+        background-color: #ccc;
+        border: none;
+        border-radius: 50%;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .catalogo-propiedades {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .propiedad {
+        padding: 20px;
+    }
+
+
+
+    .ver-detalles {
+        padding: 12px 0;
+    }
+}
+
+/* Estilos para pantallas extra pequeñas (hasta 360px) */
+@media screen and (max-width: 360px) {
+    .popup-content {
+        padding: 10px;
+        width: 90%;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 10px auto;
+    }
+
+    .property-table th,
+    .property-table td {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .popup-body form button[type="submit"] {
+        font-size: 10px;
+        padding: 8px 12px;
+        border-radius: 5px;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    .popup-close {
+        font-size: 10px;
+        padding: 6px;
+        background-color: #ccc;
+        border: none;
+        border-radius: 50%;
+        color: #333;
+        cursor: pointer;
+    }
+}

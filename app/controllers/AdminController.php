@@ -32,7 +32,7 @@ class AdminController extends Controller
         } else {
             // Ejecutar búsqueda con el término proporcionado
             $inmobiliarias = InmobiliariaModel::getInmobiliariasConPaginacion($pagina, $limite, $buscar);
-            $totalInmobiliarias = InmobiliariaModel::contarInmobiliarias($buscar);
+            $totalInmobiliarias = InmobiliariaModel::contarInmobiliarias();
         }
 
         // Calcular el total de páginas

@@ -31,7 +31,7 @@
         }
 
         .propiedad-item a {
-            background-color: #007bff;
+            background-color: #4caf50;
             color: white;
             padding: 10px 20px;
             border-radius: 4px;
@@ -40,7 +40,7 @@
         }
 
         .propiedad-item a:hover {
-            background-color: #0056b3;
+            background-color: #1d4e1f;
         }
     </style>
 </head>

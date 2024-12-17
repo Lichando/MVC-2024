@@ -56,7 +56,7 @@
 
         .option-card h2 {
             font-size: 28px;
-            color: #007bff;
+            color: #4caf50;
             margin-bottom: 20px;
         }
 
@@ -68,7 +68,7 @@
 
         .option-card .btn {
             padding: 12px 25px;
-            background-color: #007bff;
+            background-color: #4caf50;
             color: white;
             text-decoration: none;
             font-weight: bold;
@@ -78,11 +78,11 @@
         }
 
         .option-card .btn:hover {
-            background-color: #0056b3;
+            background-color: #1d4e1f;
         }
 
         .footer {
-            background-color: #007bff;
+            background-color: #4caf50;
             color: white;
             text-align: center;
             padding: 20px;
@@ -106,7 +106,7 @@
 
         .propiedad-card h3 {
             font-size: 20px;
-            color: #007bff;
+            color: #4caf50;
         }
 
         .propiedad-card p {

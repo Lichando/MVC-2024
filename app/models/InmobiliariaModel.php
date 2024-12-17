@@ -13,11 +13,36 @@ class InmobiliariaModel extends Model
     protected $primaryKey = "id";
 
     // Obtener todas las inmobiliarias
-    public static function getAllInmobiliarias()
+    public static function obtenerInmobiliarias()
     {
         $sql = "SELECT * FROM inmobiliarias";
         return DataBase::getRecords($sql);
     }
+    public static function obtenerInmobiliariasActivas()
+    {
+        try {
+            $db = DataBase::getInstance(); // Suponiendo que tienes un singleton para la base de datos
+            $sql = "SELECT * FROM inmobiliarias WHERE activo = 1"; // Cambia la consulta según tu estructura
+            $stmt = $db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC); // Devuelve un array con los resultados
+        } catch (PDOException $e) {
+            throw new Exception("Error al obtener inmobiliarias: " . $e->getMessage());
+        }
+    }
+
+    public static function obtenerInmobiliariasInactivas() {
+        try {
+            $db = DataBase::getInstance(); // Suponiendo que tienes un singleton para la base de datos
+            $sql = "SELECT * FROM inmobiliarias WHERE activo = 0"; // Cambia la consulta según tu estructura
+            $stmt = $db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC); // Devuelve un array con los resultados
+        } catch (\PDOException $e) {
+            throw new Exception("Error al obtener inmobiliarias: " . $e->getMessage());
+        }
+    }
+
 
     // Obtener una inmobiliaria por ID
     public static function getInmobiliariasId($id)
@@ -25,9 +50,7 @@ class InmobiliariaModel extends Model
         $sql = "SELECT * FROM inmobiliarias WHERE id = :id";
         return DataBase::getRecords($sql, ['id' => $id]);
     }
-
-    // Crear inmobiliaria
-    public static function crearInmobiliaria($duenioInmobiliaria, $nombre, $matricula, $direccion, $telefono, $email)
+    public static function crearInmobiliaria($duenioInmobiliaria, $nombre,$nombreImagen, $matricula, $direccion, $telefono, $email)
     {
         // Verificar si el dueño ya tiene una inmobiliaria
         $query = "SELECT COUNT(*) FROM inmobiliarias WHERE duenioInmobiliaria = :duenioInmobiliaria";
@@ -42,17 +65,17 @@ class InmobiliariaModel extends Model
         $query = "SELECT COUNT(*) FROM inmobiliarias WHERE matricula = :matricula";
         $params = [':matricula' => $matricula];
         $result = DataBase::fetchOne($query, $params);
-
         if ($result[0] > 0) {
             throw new Exception('La matrícula ya está registrada.');
         }
 
         // Insertar la nueva inmobiliaria
-        $query = "INSERT INTO inmobiliarias (duenioInmobiliaria, nombre, matricula, direccion, telefono, email, fecha_creacion, activo) 
-                  VALUES (:duenioInmobiliaria, :nombre, :matricula, :direccion, :telefono, :email, NOW(), 1)";
+        $query = "INSERT INTO inmobiliarias (duenioInmobiliaria, nombre,imagen, matricula, direccion, telefono, email, fecha_creacion, activo) 
+              VALUES (:duenioInmobiliaria, :nombre,:imagen, :matricula, :direccion, :telefono, :email, NOW(), 1)";
         $params = [
             ':duenioInmobiliaria' => $duenioInmobiliaria,
             ':nombre' => $nombre,
+            ':imagen'=>$nombreImagen,
             ':matricula' => $matricula,
             ':direccion' => $direccion,
             ':telefono' => $telefono,
@@ -62,30 +85,41 @@ class InmobiliariaModel extends Model
         // Ejecutar la inserción
         DataBase::execute($query, $params);
 
-        // Asignar el rol 3 (Administrador Inmobiliaria) al dueño
-        self::asignarRolInmobiliaria($duenioInmobiliaria);
+        // Obtener el ID de la inmobiliaria insertada
+        $inmobiliariaId = DataBase::lastInsertId();  // Asegúrate de que la base de datos lo soporte
 
-        return true; // Retornar true para indicar que la operación fue exitosa
-    }
-
-    public static function asignarRolInmobiliaria($duenioInmobiliaria)
-    {
-        // Actualizar el rol del usuario a '3' (Administrador Inmobiliaria)
-        $query = "UPDATE usuarios SET rol = 3 WHERE id = :duenioInmobiliaria";
-        $params = [':duenioInmobiliaria' => $duenioInmobiliaria];
-
+        // Asignar el inmobiliaria_id al usuario
+        $query = "UPDATE usuarios SET inmobiliaria_id = :inmobiliaria_id WHERE id = :duenioInmobiliaria";
+        $params = [
+            ':inmobiliaria_id' => $inmobiliariaId,
+            ':duenioInmobiliaria' => $duenioInmobiliaria
+        ];
         DataBase::execute($query, $params);
 
-        // Actualizar la sesión del usuario con el nuevo rol
-        SessionController::login($duenioInmobiliaria, 3, SessionController::getSessionValue('user_name'), $duenioInmobiliaria);
-
+        return $inmobiliariaId; // Retornar el ID de la inmobiliaria recién creada
     }
+
+    // Método para asignar el rol de administrador inmobiliaria
+    public static function asignarRolInmobiliaria($duenioInmobiliaria, $inmobiliariaId)
+    {
+        // Actualizamos el rol del usuario a 'Administrador Inmobiliaria'
+        $query = "UPDATE usuarios SET rol = 3, inmobiliaria_id = :inmobiliaria_id WHERE id = :duenioInmobiliaria";
+        $params = [
+            ':inmobiliaria_id' => $inmobiliariaId,
+            ':duenioInmobiliaria' => $duenioInmobiliaria
+        ];
+
+        // Ejecutar la consulta
+        DataBase::execute($query, $params);
+    }
+
 
     // Actualizar una inmobiliaria
     public static function ActualizarInmobiliaria($id, $data)
     {
         $sql = "UPDATE inmobiliarias
                 SET nombre = :nombre, 
+                    imagen=:imagen,
                     duenioInmobiliaria = :duenioInmobiliaria, 
                     matricula = :matricula,
                     direccion = :direccion,
@@ -113,44 +147,18 @@ class InmobiliariaModel extends Model
         return DataBase::execute($sql, ['id' => $id]);
     }
 
-    // Obtener inmobiliarias con búsqueda y paginación
-    public static function getInmobiliariasConPaginacion($pagina, $limite, $buscar = '')
+    public static function contarInmobiliarias()
     {
-        // Validar parámetros
-        $pagina = max(1, (int) $pagina);
-        $limite = max(1, (int) $limite);
-        $offset = ($pagina - 1) * $limite;
-
-        $sql = "SELECT * FROM inmobiliarias WHERE 1";
-
-        // Añadir condiciones de búsqueda si corresponde
-        $parametros = [];
-        if (!empty($buscar)) {
-            $sql .= " AND (nombre LIKE :buscar OR direccion LIKE :buscar OR telefono LIKE :buscar)";
-            $parametros['buscar'] = '%' . $buscar . '%';
+        try {
+            $db = DataBase::getInstance();
+            $stmt = $db->query("SELECT COUNT(*) as total FROM inmobiliarias");
+            $result = $stmt->fetch(\PDO::FETCH_OBJ);
+            return $result->total;
+        } catch (\PDOException $e) {
+            throw new Exception("Error al contar las inmobiliarias: " . $e->getMessage());
         }
-
-        // Añadir LIMIT y OFFSET (directamente en la consulta)
-        $sql .= " LIMIT $limite OFFSET $offset";
-
-        // Ejecutar la consulta
-        return DataBase::getRecords($sql, $parametros);
     }
 
-    // Contar total de inmobiliarias (con opción de búsqueda)
-    public static function contarInmobiliarias($buscar = '')
-    {
-        $sql = "SELECT COUNT(*) as total FROM inmobiliarias WHERE 1";
-
-        $parametros = [];
-        if (!empty($buscar)) {
-            $sql .= " AND (nombre LIKE :buscar OR direccion LIKE :buscar OR telefono LIKE :buscar)";
-            $parametros['buscar'] = '%' . $buscar . '%';
-        }
-
-        $result = DataBase::getRecords($sql, $parametros);
-        return $result[0]->total ?? 0;
-    }
 
     // Obtener corredores y agentes asociados a una inmobiliaria
     public static function getCorredoresYAgentes($inmobiliariaId)
@@ -219,23 +227,42 @@ class InmobiliariaModel extends Model
     }
 
 
-    public static function getInmobiliariaInfo($userId)
+
+    public static function ObtenerPropiedadesTotalesInmo($inmobiliariaId)
     {
-        $query = "
-            SELECT u.inmobiliaria_id, i.nombre
-            FROM usuarios u
-            JOIN inmobiliarias i ON i.id = u.inmobiliaria_id
-            WHERE u.id = :userId
-        ";
-
-        $stmt = DataBase::prepare($query);
-        $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
-        $stmt->execute();
-
-        // Fetch los resultados como un array asociativo
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Retornar la información o null si no existe
-        return $result ?: null;
+        try {
+            $db = DataBase::getInstance();
+            $stmt = $db->query("SELECT COUNT(*) as total FROM propiedades WHERE id_inm=$inmobiliariaId");
+            $result = $stmt->fetch(\PDO::FETCH_OBJ);
+            return $result->total;
+        } catch (PDOException $e) {
+            throw new Exception("Error al contar las propiedades: " . $e->getMessage());
+        }
     }
+
+
+    public static function ObtenerPropiedadesActivasInmo($inmobiliariaId)
+    {
+        try {
+            $db = DataBase::getInstance();
+            $stmt = $db->query("SELECT COUNT(*) as total FROM propiedades WHERE id_inm=$inmobiliariaId AND activo=1");
+            $result = $stmt->fetch(\PDO::FETCH_OBJ);
+            return $result->total;
+        } catch (PDOException $e) {
+            throw new Exception("Error al contar las propiedades: " . $e->getMessage());
+        }
+    }
+
+    public static function ObtenerPropiedadesInactivasInmo($inmobiliariaId)
+    {
+        try {
+            $db = DataBase::getInstance();
+            $stmt = $db->query("SELECT COUNT(*) as total FROM propiedades WHERE id_inm=$inmobiliariaId AND activo=0");
+            $result = $stmt->fetch(\PDO::FETCH_OBJ);
+            return $result->total;
+        } catch (PDOException $e) {
+            throw new Exception("Error al contar las propiedades: " . $e->getMessage());
+        }
+    }
+
 }

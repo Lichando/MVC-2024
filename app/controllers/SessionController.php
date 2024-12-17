@@ -63,7 +63,7 @@ class SessionController extends Controller
         $_SESSION['user_name'] = $userName;
 
         // Obtener el nombre de la inmobiliaria desde la base de datos
-        $inmobiliariaNombre = UserModel::getInmobiliariaNombre($inmobiliariaId); 
+        $inmobiliariaNombre = UserModel::ObtenerInmobiliariaNombre($inmobiliariaId); 
 
         // Guardar el nombre de la inmobiliaria en la sesión
         $_SESSION['inmobiliaria_nombre'] = $inmobiliariaNombre;

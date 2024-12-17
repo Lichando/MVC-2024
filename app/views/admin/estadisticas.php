@@ -32,7 +32,7 @@
 
         .btn {
             padding: 12px 25px;
-            background-color: #007bff;
+            background-color: #4caf50;
             color: white;
             text-decoration: none;
             font-weight: bold;
@@ -42,7 +42,7 @@
         }
 
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #1d4e1f;
         }
 
         table {
@@ -61,7 +61,7 @@
         }
 
         th {
-            background-color: #007bff;
+            background-color: #4caf50;
             color: white;
         }
 
@@ -71,7 +71,7 @@
 
         .ranking-section h2 {
             font-size: 24px;
-            color: #007bff;
+            color: #4caf50;
             margin-bottom: 15px;
         }
 

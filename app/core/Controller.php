@@ -11,13 +11,29 @@ class Controller
     }
     
     // Obtiene el path base para la URL
-    public static function path()
-    {
-        $reemplazar = str_replace('url=', '', $_SERVER['QUERY_STRING']);
-        $camino =str_replace($reemplazar, '', $_SERVER["REQUEST_URI"]);
-        self::$ruta = $camino;
+    public static function path() {
+        // Detecta el protocolo (http o https)
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        
+        // Obtén el host (localhost o dominio)
+        $host = $_SERVER['HTTP_HOST'];
+        
+        // Obtener el script name para saber en qué directorio se encuentra el archivo
+        $scriptName = dirname($_SERVER['SCRIPT_NAME']); // Ejemplo: '/MVC-2024/public'
+        
+        // Si el script se ejecuta desde 'public', eliminamos 'public' de la ruta
+        $basePath = str_replace('/public', '', $scriptName);
+        
+        // Añadir la barra al final si no existe
+        $basePath = rtrim($basePath, '/') . '/';
+        
+        // Combina todo para obtener la URL base
+        self::$ruta = $protocol . $host . $basePath;
+        
         return self::$ruta;
     }
+    
+    
 
     protected function viewDir($nameSpace){
         $replace = array($nameSpace,'Controller');

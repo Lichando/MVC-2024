@@ -1,29 +1,35 @@
-@import "reset.css";
 @import "grid.css";
 @import "header.css";
 @import "footer.css";
+@import "formularlr.css";
 @import "inicio.css";
-@import "login.css";
-@import "registro.css";
+@import "empresa.css";
+@import "contacto.css";
+@import "dashboard.css";
+@import "propiedades.css";
 
-/* Estilo general para el main */
+/* Asegura que la página ocupe toda la altura de la ventana */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column; /* Organiza header, main y footer en una columna */
+}
+
+/* Header fijo en la parte superior */
+header {
+
+    padding: 10px 20px;
+    flex-shrink: 0; /* Impide que el header se reduzca */
+}
+
+/* Main ocupa todo el espacio disponible */
 main {
-  min-height: calc(100vh - 120px); /* Ajusta este valor según la altura de tu header y footer */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Esto asegura que el footer se empuje hacia el fondo */
+    flex: 1; /* Se expande para llenar el espacio restante */
+    
 }
 
 
-
-.hide{
-    display: none;
-}
-
-body{
-	font-size: 16px;
-    font-family: 'Oswald', sans-serif;
-}
 b{
     font-weight: bold;
 }
@@ -35,4 +41,4 @@ b{
     body{
         font-size: 14px !important;
     }
-}
+} 

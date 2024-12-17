@@ -1,0 +1,94 @@
+/* Contenedor de la sección de contacto */
+
+.container-contacto{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.contacto {
+    padding: 20px;
+    background-color: #f4f4f4;
+  }
+  
+  /* Títulos */
+  .contacto h1, .contacto h3 {
+    text-align: center;
+    font-size: 1.8em;
+    margin-bottom: 10px;
+  }
+  
+  .contacto p {
+    text-align: center;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+  }
+  
+  /* Opciones de contacto */
+  .contact-options {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Permite que los elementos se apilen en pantallas pequeñas */
+    margin-bottom: 20px;
+  }
+  
+  .option {
+    text-align: center;
+    flex: 1 1 30%; /* Asegura que las opciones ocupen el 30% del ancho en pantallas grandes */
+    max-width: 300px; /* Limita el ancho máximo de cada opción */
+    margin-bottom: 20px;
+  }
+  
+  .contact-link {
+    text-decoration: none;
+    color: #333;
+    text-align: center;
+    display: inline-block;
+  }
+  
+  .contact-link i {
+    color: #4CAF50; /* Color del ícono */
+    margin-bottom: 10px;
+    font-size: 5rem; /* Tamaño del ícono */
+  }
+  
+  .contact-link span {
+    display: block;
+    margin-top: 5px;
+    font-size: 20px;
+  }
+  
+  /* Ajuste para la visualización en pantallas pequeñas */
+  @media screen and (max-width: 768px) {
+    .contact-options {
+      flex-direction: column; /* Las opciones se apilan verticalmente en dispositivos pequeños */
+      gap: 15px;
+    }
+  
+    .option {
+      flex: 1 1 100%; /* Cada opción ocupa el 100% del ancho disponible */
+      max-width: 100%; /* Asegura que las opciones no excedan el ancho del contenedor */
+    }
+  
+    .contact-link i {
+      font-size: 1.8em; /* Hacer que los íconos sean un poco más pequeños en pantallas móviles */
+    }
+  }
+  
+  /* En pantallas muy pequeñas, podemos reducir aún más los tamaños y ajustar márgenes */
+  @media screen and (max-width: 480px) {
+    .contact-options {
+      flex-direction: column; 
+      gap: 10px;
+    }
+  
+    .contact-link i {
+      font-size: 1.5em; /* Los íconos serán aún más pequeños en pantallas móviles pequeñas */
+    }
+  
+    .contacto p, .contacto h1 {
+      font-size: 1.2em; /* Ajusta el tamaño del texto para pantallas más pequeñas */
+    }
+  }
+  

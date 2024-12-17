@@ -62,7 +62,8 @@ class DataBase
     }
 
     // Método para get la instancia de conexión a la base de datos
-    public static function getInstance() {
+    public static function getInstance()
+    {
         if (self::$instance === null) {
             self::$instance = new self(); // Cambiar Database() por self()
         }
@@ -84,7 +85,11 @@ class DataBase
             return ['state' => false, 'notification' => $e->errorInfo[2] ?? 'Error desconocido'];
         }
     }
-
+     // Método para obtener el último ID insertado
+     public static function lastInsertId()
+     {
+         return self::connection()->lastInsertId();
+     }
     // Preparar y ejecutar una consulta con manejo de excepciones
     private static function prepareAndExecute($sql, $params = [])
     {
@@ -97,19 +102,24 @@ class DataBase
         return $statement;
     }
 
-     // Función para obtener una sola fila de resultados
-     public static function fetchOne($query, $params = [])
-     {
-         $stmt = self::connection()->prepare($query);
-         $stmt->execute($params);
-         return $stmt->fetch(); // Devuelve la primera fila del resultado
-     }
- 
-     // Función para obtener varias filas de resultados
-     public static function fetchAll($query, $params = [])
-     {
-         $stmt = self::connection()->prepare($query);
-         $stmt->execute($params);
-         return $stmt->fetchAll(); // Devuelve todas las filas del resultado
-     }
+    // Función para obtener una sola fila de resultados
+    public static function fetchOne($query, $params = [])
+    {
+        $stmt = self::connection()->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetch(); // Devuelve la primera fila del resultado
+    }
+
+    // Función para obtener varias filas de resultados
+    public static function fetchAll($query, $params = [])
+    {
+        $stmt = self::connection()->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll(); // Devuelve todas las filas del resultado
+    }
+
+   
+
+    
+
 }

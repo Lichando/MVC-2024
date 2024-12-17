@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <?= $head ?>
@@ -15,33 +15,25 @@
     <div class="slider-container">
       <div class="slider">
         <div class="slide">
-          <img src="https://i.pinimg.com/originals/00/02/92/00029211997d8e6e5ed5f72d78ead42e.jpg" alt="Imagen 1">
+          <img src="../img/imagenslider1.webp" alt="Imagen 1">
           <!-- Cambia la ruta de la imagen -->
         </div>
         <div class="slide">
-          <img src="https://www.serargentino.com/public/images/2020/05/Rosario-de-noche-773x458.jpeg" alt="Imagen 2">
+          <img src="../img/imagenslider2.webp" alt="Imagen 2">
           <!-- Cambia la ruta de la imagen -->
         </div>
         <div class="slide">
-          <img src="imagen3.jpg" alt="Imagen 3"> <!-- Cambia la ruta de la imagen -->
+          <img src="../img/imagenslider3.webp" alt="Imagen 3"> <!-- Cambia la ruta de la imagen -->
         </div>
       </div>
 
       <div class="buscador">
-        <form>
+        <form id="form-busqueda" method="POST"> <!-- Aquí defines la URL de destino -->
           <select id="tipo-busqueda" name="tipo-busqueda">
             <option value="">¿Qué deseas hacer?</option>
-            <option value="comprar">Comprar</option>
-            <option value="alquilar">Alquilar</option>
-            <option value="emprendimientos">Buscar Emprendimientos</option>
-          </select>
-
-          <select id="tipo-propiedad" name="tipo-propiedad">
-            <option value="">Tipo de Propiedad</option>
-            <option value="casa">Casa</option>
-            <option value="departamento">Departamento</option>
-            <option value="lote">Lote</option>
-            <option value="comercial">Comercial</option>
+            <option value="1">Comprar</option>
+            <option value="2">Alquilar</option>
+            <option value="3">Temporario</option>
           </select>
 
           <select id="cantidad-banos" name="cantidad-banos">
@@ -62,7 +54,7 @@
             <option value="5">5 o más</option>
           </select>
 
-          <input type="text" id="calle" name="calle" placeholder="Ingrese la calle">
+          <input type="text" id="direccion" name="direccion" placeholder="Ingrese la calle">
 
           <button type="submit">Buscar</button>
         </form>
@@ -72,15 +64,15 @@
     <section class="estadisticas">
       <h2>Estadísticas de la Plataforma</h2>
       <div class="estadistica">
-        <div class="numero">120</div>
+        <div class="numero"><?= htmlspecialchars($contadorInmo); ?></div>
         <div class="texto">Inmobiliarias 🏢</div>
       </div>
       <div class="estadistica">
-        <div class="numero">3500</div>
+        <div class="numero"><?= htmlspecialchars($contadorUser); ?></div>
         <div class="texto">Usuarios Registrados 👥</div>
       </div>
       <div class="estadistica">
-        <div class="numero">2500</div>
+        <div class="numero"><?= htmlspecialchars($contadorPropiedades); ?></div>
         <div class="texto">Inmuebles 🏠</div>
       </div>
     </section>
@@ -119,174 +111,59 @@
         </div>
       </div>
     </section>
-    <section class="emprendimientos-destacados">
-      <h2>Emprendimientos Destacados 🏙️</h2>
-      <div class="emprendimientos-container">
-        <!-- Simulación de un foreach que selecciona los 5 más vistos -->
-        <?php
-        // Lista de emprendimientos con vistas
-        $emprendimientos = [
-          [
-            'titulo' => 'Proyecto Eco Verde',
-            'descripcion' => 'Un proyecto ecológico y sostenible ubicado en el corazón de la ciudad.',
-            'imagen' => 'images/eco-verde.jpg',
-            'link' => '#',
-            'vistas' => 120
-          ],
-          [
-            'titulo' => 'Skyline Towers',
-            'descripcion' => 'Apartamentos de lujo con vistas panorámicas al skyline.',
-            'imagen' => 'images/skyline.jpg',
-            'link' => '#',
-            'vistas' => 250
-          ],
-          [
-            'titulo' => 'Residencial Costa Azul',
-            'descripcion' => 'Un lugar paradisíaco cerca del mar con todas las comodidades.',
-            'imagen' => 'images/costa-azul.jpg',
-            'link' => '#',
-            'vistas' => 180
-          ],
-          [
-            'titulo' => 'Central Park Plaza',
-            'descripcion' => 'Un complejo de oficinas premium en la mejor ubicación de la ciudad.',
-            'imagen' => 'images/central-park.jpg',
-            'link' => '#',
-            'vistas' => 210
-          ],
-          [
-            'titulo' => 'Las Torres del Sol',
-            'descripcion' => 'Viviendas de alta gama en la mejor zona residencial.',
-            'imagen' => 'images/torres-del-sol.jpg',
-            'link' => '#',
-            'vistas' => 90
-          ],
-          [
-            'titulo' => 'Barrio Norte Residencial',
-            'descripcion' => 'Una oportunidad de inversión en una zona de gran crecimiento.',
-            'imagen' => 'images/barrio-norte.jpg',
-            'link' => '#',
-            'vistas' => 160
-          ],
-        ];
-
-        // Ordenamos el array por número de vistas de mayor a menor
-        usort($emprendimientos, function ($a, $b) {
-          return $b['vistas'] - $a['vistas'];
-        });
-
-        // Mostramos los primeros 5 emprendimientos más vistos
-        $emprendimientos_mostrar = array_slice($emprendimientos, 0, 5);
-        ?>
-
-        <!-- Mostramos los 5 más vistos -->
-        <?php foreach ($emprendimientos_mostrar as $emprendimiento): ?>
-          <article class="emprendimiento">
-            <img src="<?= $emprendimiento['imagen'] ?>" alt="Imagen de Emprendimiento">
-            <div class="emprendimiento-info">
-              <h3 class="emprendimiento-titulo"><?= $emprendimiento['titulo'] ?></h3>
-              <p class="emprendimiento-descripcion"><?= $emprendimiento['descripcion'] ?></p>
-              <a href="<?= $emprendimiento['link'] ?>" class="emprendimiento-link">Ver más detalles</a>
-            </div>
-          </article>
-        <?php endforeach; ?>
+    <section class="propiedades-destacadas">
+      <h2>Nuevas propiedades 🏠</h2>
+      <div class="propiedades-container">
+        <?php if (!empty($propiedades_mostrar)): ?>
+          <?php foreach ($propiedades_mostrar as $propiedad): ?>
+            <article class="propiedad">
+              <!-- Condicional para la imagen -->
+              <img
+                src="<?= $propiedad->img1 ? '../' . htmlspecialchars($propiedad->img1) : 'https://static.vecteezy.com/system/resources/previews/019/787/070/non_2x/no-photos-and-no-phones-forbidden-sign-on-transparent-background-free-png.png' ?>"
+                alt="Imagen de Propiedad">
+              <div class="propiedad-info">
+                <h3 class="propiedad-titulo"><?= htmlspecialchars($propiedad->direccionFake) ?></h3>
+                <p class="propiedad-descripcion"><?= htmlspecialchars(strlen($propiedad->descripcion) > 50 ? substr($propiedad->descripcion, 0, 50) . '...' : $propiedad->descripcion); ?>
+                </p>
+                <p class="propiedad-precio"><strong>Precio:</strong> <?= htmlspecialchars($propiedad->precio) ?> USD</p>
+                <a href="../propiedades/detalles/<?= urlencode(base64_encode($propiedad->id)) ?>" class="ver-detalles">Ver detalles</a>
+              </div>
+            </article>
+          <?php endforeach; ?>
+        <?php else: ?>
+          <p>No hay propiedades destacadas en este momento.</p>
+        <?php endif; ?>
       </div>
     </section>
-
-
-    <section class="propiedades-destacadas">
-      <h2>Propiedades Destacadas 🏠</h2>
-      <div class="propiedades-container">
-        <!-- Simulación de un foreach que selecciona las 5 propiedades más vistas -->
-        <?php
-        // Lista de propiedades con vistas
-        $propiedades = [
-          [
-            'titulo' => 'Apartamento en la Playa',
-            'descripcion' => 'Hermoso apartamento con vistas al mar y acceso a la playa.',
-            'imagen' => 'images/playa.jpg',
-            'link' => '#',
-            'vistas' => 320
-          ],
-          [
-            'titulo' => 'Casa Moderna en el Centro',
-            'descripcion' => 'Casa moderna con tecnología inteligente y diseño minimalista.',
-            'imagen' => 'images/centro.jpg',
-            'link' => '#',
-            'vistas' => 450
-          ],
-          [
-            'titulo' => 'Residencia de Lujo en el Campo',
-            'descripcion' => 'Amplia residencia rodeada de naturaleza y tranquilidad.',
-            'imagen' => 'images/campo.jpg',
-            'link' => '#',
-            'vistas' => 290
-          ],
-          [
-            'titulo' => 'Penthouse en el Corazón de la Ciudad',
-            'descripcion' => 'Penthouse de lujo con piscina privada y vistas panorámicas.',
-            'imagen' => 'images/penthouse.jpg',
-            'link' => '#',
-            'vistas' => 520
-          ],
-          [
-            'titulo' => 'Chalet en Zona Residencial',
-            'descripcion' => 'Chalet amplio y luminoso en una tranquila zona residencial.',
-            'imagen' => 'images/chalet.jpg',
-            'link' => '#',
-            'vistas' => 150
-          ],
-          [
-            'titulo' => 'Departamento Familiar en Zona Norte',
-            'descripcion' => 'Departamento ideal para familias, con colegios y parques cercanos.',
-            'imagen' => 'images/departamento.jpg',
-            'link' => '#',
-            'vistas' => 280
-          ]
-        ];
-
-        // Ordenamos el array por número de vistas de mayor a menor
-        usort($propiedades, function ($a, $b) {
-          return $b['vistas'] - $a['vistas'];
-        });
-
-        // Mostramos los primeros 5 propiedades más vistas
-        $propiedades_mostrar = array_slice($propiedades, 0, 5);
-        ?>
-
-        <!-- Mostramos las 5 propiedades más vistas -->
-        <?php foreach ($propiedades_mostrar as $propiedad): ?>
-          <article class="propiedad">
-            <img src="<?= $propiedad['imagen'] ?>" alt="Imagen de Propiedad">
-            <div class="propiedad-info">
-              <h3 class="propiedad-titulo"><?= $propiedad['titulo'] ?></h3>
-              <p class="propiedad-descripcion"><?= $propiedad['descripcion'] ?></p>
-              <a href="<?= $propiedad['link'] ?>" class="propiedad-link">Ver más detalles</a>
-            </div>
-          </article>
-        <?php endforeach; ?>
-      </div>
+    </div>
     </section>
     <section class="inmobiliarias-section">
       <h2>Inmobiliarias que operan en la plataforma</h2>
       <div class="inmobiliarias-wrapper">
         <div class="inmobiliarias-track">
-          <?php
-          // Mostrar las inmobiliarias obtenidas desde la base de datos
-          if ($resultado->num_rows > 0) {
-            while ($fila = $resultado->fetch_assoc()) {
-              echo '<div class="inmobiliaria-item">';
-              echo '<img src="' . $fila['imagen'] . '" alt="Inmobiliaria ' . $fila['nombre'] . '">';
-              echo '<p>' . $fila['nombre'] . '</p>';
-              echo '</div>';
-            }
-          } else {
-            echo '<p>No hay inmobiliarias disponibles.</p>';
-          }
-          ?>
+          <?php if (!empty($inmobiliarias)): ?>
+            <?php foreach ($inmobiliarias as $inmobiliaria): ?>
+              <div class="inmobiliaria-item">
+                <?php if (!empty($inmobiliaria['imagen'])): ?>
+                  <img src="<?= htmlspecialchars('../logosinmb/' . $inmobiliaria['imagen']); ?>"
+                    alt="Inmobiliaria <?= htmlspecialchars($inmobiliaria['nombre'] ?? 'Desconocida'); ?>">
+                <?php else: ?>
+                  <img
+                    src="https://static.vecteezy.com/system/resources/previews/019/787/070/non_2x/no-photos-and-no-phones-forbidden-sign-on-transparent-background-free-png.png"
+                    alt="Inmobiliaria <?= htmlspecialchars($inmobiliaria['nombre'] ?? 'Desconocida'); ?>">
+                <?php endif; ?>
+                <p><?= htmlspecialchars($inmobiliaria['nombre'] ?? 'Desconocida'); ?></p>
+              </div>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <p>No hay inmobiliarias disponibles.</p>
+          <?php endif; ?>
         </div>
       </div>
     </section>
+
+
+
 
   </main>
   <footer id="footer-box">

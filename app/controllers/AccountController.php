@@ -78,12 +78,14 @@ class AccountController extends Controller
         $head = SiteController::head();
         $header = SiteController::header();
         $footer = SiteController::footer();
+        $scripts = SiteController::scripts();
         Response::render($this->viewDir(__NAMESPACE__), "login", [
             "title" => 'Iniciar Sesión',
             "head" => $head,
             "header" => $header,
             "footer" => $footer,
             "error" => $error,
+            "scripts"=>$scripts
         ]);
     }
 
@@ -98,6 +100,11 @@ class AccountController extends Controller
         // get el nombre de usuario desde la sesión
         $userName = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Invitado';
         $inmobiliariaNombre = isset($_SESSION['inmobiliaria_nombre']) ? $_SESSION['inmobiliaria_nombre']: 'No tiene';
+        $inmobiliariaId = isset($_SESSION['inmobiliaria_id']) ? $_SESSION['inmobiliaria_id']: 'No tiene';
+
+        $propiedadesCountAc = InmobiliariaController::ContadorPropiedadesActivasInmo($inmobiliariaId);
+        $propiedadesCountInac = InmobiliariaController::ContadorPropiedadesInactivasInmo($inmobiliariaId);
+        $propiedadesCountAll = InmobiliariaController::ContadorPropiedadesTotalesInmo($inmobiliariaId);
             
         // Redirigir a diferentes dashboards según el rol
         switch ($rolUsuario) {
@@ -109,6 +116,7 @@ class AccountController extends Controller
                     "header" => SiteController::header(),
                     "footer" => SiteController::footer(),
                     "userName" => $userName,
+                    "scripts"=> SiteController::scripts(),
                 ]);
                 return;
     
@@ -121,8 +129,12 @@ class AccountController extends Controller
                     "head" => SiteController::head(),
                     "header" => SiteController::header(),
                     "footer" => SiteController::footer(),
+                    "scripts"=> SiteController::scripts(),
                     "userName" => $userName,
                     "inmobiliariaNombre" => $inmobiliariaNombre,
+                    "propiedadesActivasCount"=>$propiedadesCountAc,
+                    "propiedadesInactivasCount"=>$propiedadesCountInac,
+                    "totalPropiedadesCount"=>$propiedadesCountAll,
                 ]);
                 return;
     
@@ -134,6 +146,7 @@ class AccountController extends Controller
                     "head" => SiteController::head(),
                     "header" => SiteController::header(),
                     "footer" => SiteController::footer(),
+                    "scripts"=> SiteController::scripts(),
                 ]);
                 return;
     
@@ -184,12 +197,15 @@ class AccountController extends Controller
             $head = SiteController::head();
             $header = SiteController::header();
             $footer = SiteController::footer();
+            $scripts= SiteController::scripts();
+            
             Response::render($this->viewDir(__NAMESPACE__), "register", [
                 "title" => 'Registro',
                 "head" => $head,
                 "header" => $header,
                 "footer" => $footer,
                 "error" => $error,
+                "scripts"=>$scripts ,
             ]);
             return;
         }
@@ -198,11 +214,13 @@ class AccountController extends Controller
         $head = SiteController::head();
         $header = SiteController::header();
         $footer = SiteController::footer();
+        $scripts= SiteController::scripts();
         Response::render($this->viewDir(__NAMESPACE__), "register", [
             "title" => 'Registro',
             "head" => $head,
             "header" => $header,
             "footer" => $footer,
+            "scripts"=>$scripts ,
         ]);
     }
 

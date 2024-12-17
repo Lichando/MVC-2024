@@ -1,0 +1,98 @@
+/* Estilos para la sección sobre la empresa */
+#sobre-nosotros {
+    background-color: #fff;
+    padding: 40px 20px;
+    margin-top: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#sobre-nosotros h2 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Estilos para las subsecciones (Quiénes somos, Historia, Misión, Visión, Valores) */
+.quienes-somos,
+.historia,
+.mision,
+.vision,
+.valores {
+    margin-bottom: 30px;
+}
+
+.quienes-somos h3,
+.historia h3,
+.mision h3,
+.vision h3,
+.valores h3 {
+    font-size: 2rem;
+    color: #333;
+    border-bottom: 2px solid #0e8b02;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.quienes-somos p,
+.historia p,
+.mision p,
+.vision p,
+.valores ul {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+.historia p {
+    margin-top: 10px;
+}
+
+.valores ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.valores li {
+    font-size: 1rem;
+    margin: 8px 0;
+    padding-left: 20px;
+    position: relative;
+}
+
+.valores li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #0e8b02;
+    font-size: 1.2rem;
+}
+
+/* Estilos para mejorar la accesibilidad en dispositivos móviles */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    #sobre-nosotros h2 {
+        font-size: 2rem;
+    }
+
+    .quienes-somos h3,
+    .historia h3,
+    .mision h3,
+    .vision h3,
+    .valores h3 {
+        font-size: 1.5rem;
+    }
+
+    .quienes-somos p,
+    .historia p,
+    .mision p,
+    .vision p,
+    .valores ul {
+        font-size: 0.9rem;
+    }
+}
+

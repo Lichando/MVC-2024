@@ -1,24 +1,38 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
 header {
-    background-color: #fff; /* Cambia esto al color de fondo que desees */
-    padding: 10px 20px; /* Espaciado alrededor del header */
+    background-color: #fff;
+    padding: 10px 20px;
+    position: relative;
 }
 
 .header-container {
-    display: flex; /* Usamos flexbox para alinear elementos horizontalmente */
-    align-items: center; /* Centra verticalmente los elementos */
-    justify-content: space-between; /* Espacio entre logo, nav y mi cuenta */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    transition: all 0.3s ease;
 }
 
 .logo img {
-    width:150px;
-    height: 112px; /* Ajusta la altura del logo según tus necesidades */
-    margin-left: 30px;
+    width: 150px;
+    height: 112px;
+    transition: margin-left 0.3s ease;
 }
 
 nav {
-    display: flex; /* Alinea los elementos de navegación horizontalmente */
-    justify-content: center; /* Centra los enlaces de navegación */
-    flex-grow: 1; /* Permite que la nav ocupe el espacio disponible */
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    transition: all 0.3s ease;
 }
 
 nav a {
@@ -29,30 +43,117 @@ nav a {
     text-transform: uppercase;
     font-weight: 800;
 }
+
 nav a:hover {
-    color: #099b04;;
-    
+    color: #099b04;
 }
 
 .mi-cuenta {
-    font-size: 18px; /* Ajusta el tamaño de la fuente */
+    font-size: 18px;
     margin-right: 50px;
-    
 }
 
 .mi-cuenta a {
     margin-left: 30px;
-    width: 80px;
+    width: auto;
     height: auto;
     border: 2px #000000 solid;
     background-color: #044e01;
     border-radius: 25px;
-    text-decoration: none; /* Quita el subrayado del enlace */
-    color: #ffffff; /* Color del texto */
+    text-decoration: none;
+    color: #ffffff;
     padding: 15px 33px;
 }
 
 .mi-cuenta a:hover {
-    color: #ffffff; /* Cambia el color al pasar el mouse */
+    color: #ffffff;
     background-color: #099b04;
+}
+
+/* Menú hamburguesa */
+.menu-icon {
+    display: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menu-icon .bar {
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    border-radius: 5px;
+}
+
+/* Media Queries para hacer la navbar responsive */
+@media (max-width: 1024px) {
+    .header-container {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    /* Mostrar el icono de menú en pantallas pequeñas */
+    .menu-icon {
+        display: flex;
+    }
+
+    nav {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        background-color: #fff;
+        position: absolute;
+        top: 8rem;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        padding: 2rem;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        display: none; /* Menú oculto por defecto */
+    }
+
+    nav.active {
+        display: flex; /* Mostrar cuando está activo */
+    }
+
+    nav a {
+        margin: 10px 0;
+        font-size: 16px;
+    }
+
+    .mi-cuenta {
+        margin-top: 20px;
+    }
+
+    .mi-cuenta a {
+        width: auto;
+        padding: 12px 20px;
+    }
+
+    .header-container.logo-move {
+        justify-content: flex-start; /* Mueve el logo hacia la izquierda */
+    }
+
+    .logo img {
+        margin-left: 0; /* Remueve el margen izquierdo del logo cuando se activa el menú */
+    }
+}
+
+@media (max-width: 768px) {
+    .mi-cuenta a {
+        width: auto;
+        padding: 12px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    nav a {
+        font-size: 14px; /* Reducir el tamaño de la fuente en pantallas muy pequeñas */
+    }
+
+    .mi-cuenta a {
+        font-size: 14px; /* Ajustar tamaño de la fuente para que encaje mejor */
+    }
 }

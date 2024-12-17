@@ -4,76 +4,8 @@
 <head>
     <?= $head ?>
     <style>
-        /* Estilo general del formulario de inscripción */
-        .form-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f7f7f7;
-        }
+       
 
-        .form-box {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .form-box h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .form-box label {
-            font-size: 1.1em;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .form-box input[type="text"],
-        .form-box input[type="email"],
-        .form-box input[type="password"],
-        .form-box select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1em;
-        }
-
-        .form-box .btn-submit {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            width: 100%;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: background-color 0.3s;
-        }
-
-        .form-box .btn-submit:hover {
-            background-color: #0056b3;
-        }
-
-        .form-box p {
-            text-align: center;
-            font-size: 1em;
-        }
-
-        .form-box p a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .form-box p a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 
@@ -83,6 +15,18 @@
     </header>
 
     <main>
+    <div class="dashboard-container">
+            <!-- Navegación lateral -->
+            <aside class="dashboard-sidebar" id="menusegundo">
+                <h3 id="menu-toggle">Opciones</h3>
+                <ul id="menu-list">
+                    <li><a href="dashboard">Ver Propiedades</a></li>
+                    <li><a href="consultas">Consultas</a></li>
+                    <li><a href="../account/logout">Cerrar Sesión</a></li>
+                </ul>
+            </aside>
+
+
         <div class="form-container">
             <div class="form-box">
                 <h2>Inscripción</h2>
@@ -99,7 +43,7 @@
                     <?php unset($_SESSION['successMessage']); ?>
                 <?php endif; ?>
 
-                <form method="POST">
+                <form method="POST" enctype="multipart/form-data">
                     <label for="nombre">Nombre de la Inmobiliaria:</label>
                     <input type="text" name="nombre" id="nombre">
 
@@ -112,8 +56,12 @@
                     <label for="telefono">Teléfono:</label>
                     <input type="text" name="telefono" id="telefono">
 
-                    <label for="email">Correo Electrónico :</label>
+                    <label for="email">Correo Electrónico:</label>
                     <input type="email" name="email" id="email">
+
+                    <!-- Campo para subir una imagen -->
+                    <label for="imagen">Imagen de la Inmobiliaria:</label>
+                    <input type="file" name="imagen" id="imagen" accept="image/jpeg, image/png">
 
                     <button type="submit">Registrar Inmobiliaria</button>
                 </form>
@@ -123,8 +71,9 @@
     </main>
 
     <footer>
-        <?= $footerDash; ?>
+        <?= $footer; ?>
     </footer>
+    <?=$scripts;?>
 </body>
 
 </html>
