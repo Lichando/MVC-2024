@@ -273,21 +273,58 @@
     color: #5f6368;
 }
 
-/* Contenedor de imágenes de propiedad */
-.propiedad-imagenes {
+.carouselpropiedad {
+    position: relative;
+    width: 100%;
+    max-width: 600px; /* Establece un ancho máximo para el carrusel */
+    margin: 0 auto;
+    overflow: hidden; /* Oculta las partes de la imagen que se desborden */
+    border-radius: 8px; /* Bordes redondeados */
+  }
+  
+  .carouselpropiedad-track {
     display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin: 30px 0;
-    height: 30rem;
-}
-
-.propiedad-imagenes img {
-    max-width: 32%;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    object-fit: cover;
-}
+    transition: transform 0.5s ease-in-out;
+  }
+  
+  .carouselpropiedad-item {
+    flex-shrink: 0; /* Evita que los ítems se encojan */
+    width: 100%; /* Cada imagen ocupará el 100% del ancho del contenedor */
+  }
+  
+  .carouselpropiedad-item img {
+    width: 100%;
+    height: 400px; /* Ajuste el valor de `height` a lo que necesites */
+    object-fit: contain; /* Hace que la imagen cubra el área del contenedor sin distorsionarse */
+    border-radius: 8px; /* Bordes redondeados en las imágenes si se desea */
+  }
+  
+  /* Estilos para los controles del carrusel */
+  .carouselpropiedad-control-prev, .carouselpropiedad-control-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    z-index: 1;
+  }
+  
+  .carouselpropiedad-control-prev {
+    left: 10px;
+  }
+  
+  .carouselpropiedad-control-next {
+    right: 10px;
+  }
+  
+  .carouselpropiedad-control-prev:hover, .carouselpropiedad-control-next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
 
 /* Sección de detalles adicionales */
 

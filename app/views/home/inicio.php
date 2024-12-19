@@ -119,7 +119,7 @@
             <article class="propiedad">
               <!-- Condicional para la imagen -->
               <img
-                src="<?= $propiedad->img1 ? '../' . htmlspecialchars($propiedad->img1) : 'https://static.vecteezy.com/system/resources/previews/019/787/070/non_2x/no-photos-and-no-phones-forbidden-sign-on-transparent-background-free-png.png' ?>"
+                src="<?= $propiedad->img1 ? '../' . htmlspecialchars($propiedad->img1) : '../img/imgnull.png' ?>"
                 alt="Imagen de Propiedad">
               <div class="propiedad-info">
                 <h3 class="propiedad-titulo"><?= htmlspecialchars($propiedad->direccionFake) ?></h3>
@@ -149,7 +149,7 @@
                     alt="Inmobiliaria <?= htmlspecialchars($inmobiliaria['nombre'] ?? 'Desconocida'); ?>">
                 <?php else: ?>
                   <img
-                    src="https://static.vecteezy.com/system/resources/previews/019/787/070/non_2x/no-photos-and-no-phones-forbidden-sign-on-transparent-background-free-png.png"
+                    src="../img/imgnull.png"
                     alt="Inmobiliaria <?= htmlspecialchars($inmobiliaria['nombre'] ?? 'Desconocida'); ?>">
                 <?php endif; ?>
                 <p><?= htmlspecialchars($inmobiliaria['nombre'] ?? 'Desconocida'); ?></p>

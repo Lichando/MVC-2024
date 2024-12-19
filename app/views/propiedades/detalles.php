@@ -47,17 +47,43 @@
                     </p>
                 </div>
 
-                <!-- Imágenes de la propiedad -->
-                <div class="propiedad-imagenes">
-                    <?php if (!empty($propiedad->img1)): ?>
-                        <img src="../../<?= htmlspecialchars($propiedad->img1) ?>" alt="Imagen de la propiedad" />
-                    <?php endif; ?>
-                    <?php if (!empty($propiedad->img2)): ?>
-                        <img src="../../<?= htmlspecialchars($propiedad->img2) ?>" alt="Imagen de la propiedad" />
-                    <?php endif; ?>
-                    <?php if (!empty($propiedad->img3)): ?>
-                        <img src="../../<?= htmlspecialchars($propiedad->img3) ?>" alt="Imagen de la propiedad" />
-                    <?php endif; ?>
+                <div class="carouselpropiedad">
+                    <div class="carouselpropiedad-track">
+                        <!-- Verifica y carga las imágenes de la propiedad o la imagen predeterminada -->
+                        <?php if (!empty($propiedad->img1)): ?>
+                            <div class="carouselpropiedad-item">
+                                <img src="../../<?= htmlspecialchars($propiedad->img1) ?>" alt="Imagen de la propiedad" />
+                            </div>
+                        <?php else: ?>
+                            <div class="carouselpropiedad-item">
+                                <img src="../../img/imgnull.png" alt="Imagen de la propiedad" />
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($propiedad->img2)): ?>
+                            <div class="carouselpropiedad-item">
+                                <img src="../../<?= htmlspecialchars($propiedad->img2) ?>" alt="Imagen de la propiedad" />
+                            </div>
+                        <?php else: ?>
+                            <div class="carouselpropiedad-item">
+                                <img src="../../img/imgnull.png" alt="Imagen de la propiedad" />
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($propiedad->img3)): ?>
+                            <div class="carouselpropiedad-item">
+                                <img src="../../<?= htmlspecialchars($propiedad->img3) ?>" alt="Imagen de la propiedad" />
+                            </div>
+                        <?php else: ?>
+                            <div class="carouselpropiedad-item">
+                                <img src="../../img/imgnull.png" alt="Imagen de la propiedad" />
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Controles de navegación, dentro del contenedor del carrusel -->
+                    <button class="carouselpropiedad-control-prev" onclick="moveCarouselPropiedad('prev')">&#10094;</button>
+                    <button class="carouselpropiedad-control-next" onclick="moveCarouselPropiedad('next')">&#10095;</button>
                 </div>
 
                 <!-- Detalles adicionales -->
@@ -80,6 +106,28 @@
         <?= $footer ?>
     </footer>
     <?= $scripts ?>
+
+    <script>
+        let currentIndex = 0;
+
+        // Función para mover el carrusel de imágenes
+        function moveCarouselPropiedad(direction) {
+            const items = document.querySelectorAll('.carouselpropiedad-item');
+            const totalItems = items.length;
+
+            if (direction === 'next') {
+                currentIndex = (currentIndex + 1) % totalItems; // Si llega al final, vuelve al principio
+            } else {
+                currentIndex = (currentIndex - 1 + totalItems) % totalItems; // Si llega al inicio, vuelve al final
+            }
+
+            // Calcula el desplazamiento necesario
+            const offset = -currentIndex * 100;  // -100% para mover la imagen correctamente
+            document.querySelector('.carouselpropiedad-track').style.transform = `translateX(${offset}%)`;
+        }
+
+
+    </script>
 </body>
 
 </html>
