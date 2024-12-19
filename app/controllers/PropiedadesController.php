@@ -53,7 +53,7 @@ class PropiedadesController extends Controller
 
         // Renderizar la vista con las propiedades obtenidas
         Response::render($this->viewDir(__NAMESPACE__), "list", [
-            "title" => 'Inicio MVC',
+            "title" => 'Lista de propiedades',
             "head" => $head,
             "header" => $header,
             "contadorPropiedades" => $contPropiedades,

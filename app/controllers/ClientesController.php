@@ -89,10 +89,14 @@ class ClientesController extends Controller
 
                     // Asignar el rol de 'Administrador Inmobiliaria' (rol 3) al usuario
                     InmobiliariaModel::asignarRolInmobiliaria($duenioInmobiliaria, $inmobiliariaId);
+                    // Actualizar la sesión del usuario con el nuevo rol y la nueva inmobiliaria
+                    $_SESSION['user_role'] = 3;  // 'Administrador Inmobiliaria'
+                    $_SESSION['inmobiliaria_id'] = $inmobiliariaId;  // ID de la inmobiliaria creada
+                    $_SESSION['inmobiliaria_nombre'] = $nombre;  // Nombre de la inmobiliaria creada
 
                     // Mostrar mensaje de éxito
                     $_SESSION['successMessage'] = "Inmobiliaria registrada correctamente.";
-                    
+
                     Response::redirect('../account/dashboard');
                     return;
 

@@ -222,10 +222,7 @@
     transform: scale(1.05);
 }
 
-.propiedad img {
-    width: 100%;
-    height: auto;
-}
+
 
 .propiedad h2 {
     margin: 10px;
@@ -282,6 +279,7 @@
     gap: 20px;
     justify-content: center;
     margin: 30px 0;
+    height: 30rem;
 }
 
 .propiedad-imagenes img {
